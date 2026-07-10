@@ -9,11 +9,7 @@ final class SubscriptionStore: ObservableObject {
         case subscriptionRequired
     }
 
-    #if os(macOS)
-    static let platformProductID = "com.lukemclaughlin.aiengineering.pro.monthly.macos"
-    #else
     static let platformProductID = "com.lukemclaughlin.aiengineering.pro.monthly.ios"
-    #endif
 
     static let allProductIDs: Set<String> = [
         "com.lukemclaughlin.aiengineering.pro.monthly.ios",
@@ -36,6 +32,11 @@ final class SubscriptionStore: ObservableObject {
     #endif
 
     init() {
+        #if DIRECT_DISTRIBUTION
+        // Direct-download builds (distributed outside the App Store) cannot use
+        // StoreKit; access is granted by the supporter download itself.
+        accessState = .subscribed(expirationDate: nil)
+        #endif
         #if DEBUG
         if isScreenshotTrial {
             accessState = .subscriptionRequired
@@ -80,7 +81,7 @@ final class SubscriptionStore: ObservableObject {
             return "Subscription required"
         case .subscribed(let expirationDate):
             guard let expirationDate else { return "Active subscription" }
-            return "Active · renews (expirationDate.formatted(date: .abbreviated, time: .omitted))"
+            return "Active · renews \(expirationDate.formatted(date: .abbreviated, time: .omitted))"
         }
     }
 
@@ -95,8 +96,12 @@ final class SubscriptionStore: ObservableObject {
 
     func refresh() async {
         message = nil
+        #if DIRECT_DISTRIBUTION
+        accessState = .subscribed(expirationDate: nil)
+        #else
         await refreshEntitlements()
         await loadProduct()
+        #endif
     }
 
     func purchase() async {
@@ -127,7 +132,7 @@ final class SubscriptionStore: ObservableObject {
                 message = "The App Store returned an unknown purchase result. Please try again."
             }
         } catch {
-            message = "The purchase could not be completed. (error.localizedDescription)"
+            message = "The purchase could not be completed. \(error.localizedDescription)"
         }
     }
 
@@ -143,7 +148,7 @@ final class SubscriptionStore: ObservableObject {
                 message = "No active Ai_Engineering subscription was found for this Apple Account."
             }
         } catch {
-            message = "Purchases could not be restored. (error.localizedDescription)"
+            message = "Purchases could not be restored. \(error.localizedDescription)"
         }
     }
 
@@ -162,12 +167,16 @@ final class SubscriptionStore: ObservableObject {
             product = nil
             isEligibleForTrial = false
             if !hasAccess {
-                message = "The App Store could not be reached. (error.localizedDescription)"
+                message = "The App Store could not be reached. \(error.localizedDescription)"
             }
         }
     }
 
     private func refreshEntitlements() async {
+        #if DIRECT_DISTRIBUTION
+        accessState = .subscribed(expirationDate: nil)
+        return
+        #endif
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("--app-store-screenshot-access") {
             accessState = .subscribed(expirationDate: nil)
