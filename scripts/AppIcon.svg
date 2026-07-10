@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="background" x1="80" y1="40" x2="944" y2="984" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#111A34"/>
+      <stop offset="0.52" stop-color="#070C1A"/>
+      <stop offset="1" stop-color="#050812"/>
+    </linearGradient>
+    <linearGradient id="signal" x1="260" y1="230" x2="790" y2="810" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#61FAC4"/>
+      <stop offset="0.48" stop-color="#4FC2FF"/>
+      <stop offset="1" stop-color="#9B7AFF"/>
+    </linearGradient>
+    <radialGradient id="orb" cx="0" cy="0" r="1" gradientTransform="translate(742 282) rotate(128) scale(470)">
+      <stop stop-color="#745CFF" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#745CFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#9AB4E8" stroke-opacity=".055" stroke-width="2"/>
+    </pattern>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#background)"/>
+  <rect width="1024" height="1024" fill="url(#orb)"/>
+  <rect width="1024" height="1024" fill="url(#grid)"/>
+  <g opacity=".42" stroke="#5EDBC2" stroke-width="3">
+    <path d="M136 250H276L342 316" fill="none"/>
+    <path d="M888 742H752L690 680" fill="none"/>
+    <path d="M785 152V250L720 315" fill="none"/>
+    <circle cx="136" cy="250" r="8" fill="#61FAC4"/>
+    <circle cx="888" cy="742" r="8" fill="#9B7AFF"/>
+    <circle cx="785" cy="152" r="8" fill="#4FC2FF"/>
+  </g>
+  <rect x="174" y="174" width="676" height="676" rx="190" fill="#FFFFFF" fill-opacity=".025" stroke="url(#signal)" stroke-width="10"/>
+  <g filter="url(#glow)" stroke="url(#signal)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M302 700L460 326L596 700" stroke-width="58"/>
+    <path d="M365 564H538" stroke-width="47"/>
+    <path d="M704 334V694" stroke-width="58"/>
+  </g>
+  <g fill="#61FAC4">
+    <circle cx="302" cy="700" r="15"/>
+    <circle cx="460" cy="326" r="15"/>
+    <circle cx="596" cy="700" r="15"/>
+  </g>
+  <g fill="#9B7AFF">
+    <circle cx="704" cy="334" r="15"/>
+    <circle cx="704" cy="694" r="15"/>
+  </g>
+</svg>
