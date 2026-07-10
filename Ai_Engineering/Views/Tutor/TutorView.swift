@@ -251,7 +251,7 @@ private struct TutorWorkspace: View {
                     .font(.aeLabel)
                     .foregroundStyle(AEColor.textPrimary(colorScheme))
             }
-            Text("Optional. Offline tutoring remains available with no subscription.")
+            Text("Optional. Offline tutoring requires no separate LLM subscription.")
                 .font(.aeCaption)
                 .foregroundStyle(AEColor.textSecondary(colorScheme))
             Button(tutor.providerIsReady ? "Review connection" : "Connect a provider") {

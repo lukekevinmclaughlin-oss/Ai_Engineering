@@ -34,15 +34,33 @@ struct RootView: View {
     @EnvironmentObject private var state: AppState
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var selection: AppSection = .home
+    @State private var selection: AppSection = Self.initialSection
+
+    private static var initialSection: AppSection {
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        if let marker = arguments.firstIndex(of: "--app-store-section"),
+           arguments.indices.contains(marker + 1),
+           let section = AppSection(rawValue: arguments[marker + 1]) {
+            return section
+        }
+        #endif
+        return .home
+    }
 
     var body: some View {
         Group {
-            #if os(macOS)
-            desktopLayout
-            #else
-            mobileLayout
-            #endif
+            if state.subscription.isCheckingAccess {
+                SubscriptionLaunchView()
+            } else if state.subscription.hasAccess {
+                #if os(macOS)
+                desktopLayout
+                #else
+                mobileLayout
+                #endif
+            } else {
+                SubscriptionPaywallView(store: state.subscription)
+            }
         }
         .tint(AEColor.readableSignal(colorScheme))
         .animation(reduceMotion ? nil : AEMotion.gentle, value: state.appearance)

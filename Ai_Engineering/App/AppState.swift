@@ -42,6 +42,7 @@ final class AppState: ObservableObject {
     let projects: [LabProject]
     let progress: ProgressStore
     let tutor: TutorCoordinator
+    let subscription: SubscriptionStore
     @Published var appearance: AppAppearance {
         didSet {
             userDefaults.set(appearance.rawValue, forKey: Self.appearanceDefaultsKey)
@@ -66,12 +67,17 @@ final class AppState: ObservableObject {
         self.progress = progress
         self.progress.migrateLegacyMilestoneIDs(projects: projects)
         self.tutor = TutorCoordinator(curriculum: curriculum, projects: projects, defaults: userDefaults)
+        self.subscription = SubscriptionStore()
 
         progress.objectWillChange
             .sink { [weak self] in self?.objectWillChange.send() }
             .store(in: &cancellables)
 
         tutor.objectWillChange
+            .sink { [weak self] in self?.objectWillChange.send() }
+            .store(in: &cancellables)
+
+        subscription.objectWillChange
             .sink { [weak self] in self?.objectWillChange.send() }
             .store(in: &cancellables)
     }

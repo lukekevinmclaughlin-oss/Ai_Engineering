@@ -201,6 +201,22 @@ struct ProgressProfileView: View {
 
             Divider().overlay(AEColor.stroke(colorScheme))
 
+            HStack(alignment: .center, spacing: AESpacing.md) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Ai_Engineering Pro").font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
+                    Text(state.subscription.entitlementDescription)
+                        .font(.aeCallout)
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
+                }
+                Spacer()
+                Link(destination: SubscriptionStore.manageSubscriptionsURL) {
+                    Text("Manage")
+                }
+                .buttonStyle(AEButtonStyle(.outline, size: .compact, tint: AEColor.azure))
+            }
+
+            Divider().overlay(AEColor.stroke(colorScheme))
+
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Tutor Core").font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))

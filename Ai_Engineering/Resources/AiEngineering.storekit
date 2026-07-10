@@ -1,0 +1,77 @@
+{
+  "identifier" : "B5D73496-8393-4702-A004-1EF2288797ED",
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA",
+    "_timeRate" : 1
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "7A9B965D-3FB5-4490-9DBE-91E098270A4D",
+      "localizations" : [
+        {
+          "description" : "Complete access to Ai_Engineering courses, labs, projects, and Tutor Core.",
+          "displayName" : "Ai_Engineering Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "Ai_Engineering Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "1.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "2A5EC0B0-349B-4636-AEF4-E8B7F60A40D1",
+          "introductoryOffer" : {
+            "internalID" : "059960BD-36D8-423E-B2E5-905267B7FBAC",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2W"
+          },
+          "localizations" : [
+            {
+              "description" : "Unlock the complete AI engineering curriculum, interactive labs, portfolio projects, and private Tutor Core.",
+              "displayName" : "Ai_Engineering Pro Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.lukemclaughlin.aiengineering.pro.monthly.ios",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Ai_Engineering Pro Monthly — iOS"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "1.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "C4C74A3D-1E9A-4EB7-892B-2BC1C6309517",
+          "introductoryOffer" : {
+            "internalID" : "EB59D0E5-08D6-4077-9A46-1095E294AA42",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2W"
+          },
+          "localizations" : [
+            {
+              "description" : "Unlock the complete AI engineering curriculum, interactive labs, portfolio projects, and private Tutor Core.",
+              "displayName" : "Ai_Engineering Pro Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.lukemclaughlin.aiengineering.pro.monthly.macos",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Ai_Engineering Pro Monthly — macOS"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

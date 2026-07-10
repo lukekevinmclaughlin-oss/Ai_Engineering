@@ -20,6 +20,7 @@ The same target runs on iPhone, iPad, and macOS. iOS uses a compact tab-based ex
 - Project Lab with 40 realistic briefs, outcomes, project-scoped milestones, syntax-highlighted editable starter files, and simulated local quality checks
 - Progress profile with role readiness, skill matrix, levels, and adjustable learning goals
 - Shared unit tests for curriculum integrity and progress persistence
+- StoreKit 2 subscription access on iOS and macOS with a 14-day introductory trial, localized monthly pricing, verified entitlements, purchase restoration, and subscription management
 
 ## Curriculum
 
@@ -174,4 +175,4 @@ jq empty Ai_Engineering/Resources/curriculum.json
 
 The app is offline-first and has no required external runtime dependencies. Quiz and architecture exercises use exact local validation. Code labs provide an editable workspace and deterministic local structural checks without executing untrusted Python on the device. Tutor Core’s default engines run locally; only the clearly labeled Connected Provider mode performs a tutor network request.
 
-For a public multi-user release, the natural next infrastructure layer is authenticated progress sync, a containerized remote code runner, a course CMS, telemetry, subscriptions, and server-managed evaluation datasets. Those services are intentionally kept outside this native client repository.
+For a public multi-user release, the natural next infrastructure layer is authenticated progress sync, a containerized remote code runner, a course CMS, and server-managed evaluation datasets. Those services are intentionally kept outside this native client repository. Subscriptions are handled entirely by StoreKit and App Store Connect; the app does not operate a payment backend.

@@ -54,7 +54,7 @@ struct TutorSettingsView: View {
                 Text("Choose how Tutor Core thinks")
                     .aeTextRole(.display)
                     .foregroundStyle(AEColor.textPrimary(colorScheme))
-                Text("Offline is the default. No account, key, or subscription is required.")
+                Text("Offline is the default. No provider account, API key, or separate LLM subscription is required.")
                     .font(.aeBody)
                     .foregroundStyle(AEColor.textSecondary(colorScheme))
             }

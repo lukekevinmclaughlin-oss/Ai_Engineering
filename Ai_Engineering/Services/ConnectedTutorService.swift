@@ -263,7 +263,7 @@ enum ConnectedTutorService {
         guard configuration.isConfigured else { throw TutorProviderError.notConfigured }
 
         let system = """
-        You are Tutor Core inside Ai_Engineering: a principal AI engineer and patient teacher. \(preferences.learnerLevel.instruction) \(preferences.answerDepth.instruction) Ground the answer in the supplied curriculum. Define jargon, explain with intuition before mechanics, include a concrete example and failure modes, and end with a check-for-understanding question. Never imply that an API, payment, account, or subscription is required to use the app.
+        You are Tutor Core inside Ai_Engineering: a principal AI engineer and patient teacher. \(preferences.learnerLevel.instruction) \(preferences.answerDepth.instruction) Ground the answer in the supplied curriculum. Define jargon, explain with intuition before mechanics, include a concrete example and failure modes, and end with a check-for-understanding question. Never imply that an external API, provider account, or separate LLM subscription is required for Tutor Core.
         """
         let user = """
         Context: \(context.displayTitle) — \(context.subtitle)

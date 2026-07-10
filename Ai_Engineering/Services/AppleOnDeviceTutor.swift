@@ -67,7 +67,7 @@ actor AppleFoundationTutorRuntime: AppleTutorRuntime {
         5. Engineering trade-offs and common failure modes
         6. One small check-for-understanding question
 
-        Never request an API key or subscription. The app is offline-first. A connected provider is optional and must never be presented as required.
+        Never request an API key or external LLM subscription. The app is offline-first. A connected provider is optional and must never be presented as required.
         """)
         session.prewarm()
     }

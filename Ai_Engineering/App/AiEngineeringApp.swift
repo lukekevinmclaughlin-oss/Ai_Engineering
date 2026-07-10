@@ -10,6 +10,7 @@ struct AiEngineeringApp: App {
                 .environmentObject(state)
                 .tint(AEColor.signal)
                 .preferredColorScheme(state.appearance.colorScheme)
+                .task { await state.subscription.prepare() }
         }
         #if os(macOS)
         .defaultSize(width: 1_280, height: 820)

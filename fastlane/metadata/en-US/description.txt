@@ -1,0 +1,36 @@
+Become an AI engineer—starting exactly where you are.
+
+Ai_Engineering is a complete, interactive learning environment for iPhone, iPad, and Mac. It begins with computing, Python, and mathematical intuition, then builds toward language models, retrieval, agents, evaluation, multimodal systems, inference, safety, infrastructure, and principal-level architecture.
+
+LEARN BY DOING
+
+• 40 structured courses from beginner to advanced
+• 400 substantive interactive lessons
+• 140 editable, syntax-highlighted code labs
+• 100 quizzes with validation and explanations
+• 80 architecture decisions based on real trade-offs
+• 80 guided concept exercises
+• Progressive hints that help without giving the answer away
+
+BUILD A PORTFOLIO
+
+Complete 40 practical projects across beginner, intermediate, and advanced levels. Every build includes an editable workspace, milestones, local checks, and a clear outcome you can explain in an interview.
+
+YOUR PRIVATE AI TUTOR
+
+Ask questions from any lesson or project. Tutor Core explains ideas patiently from basic arithmetic upward, uses the current learning context, and can run offline. On compatible devices, Apple on-device intelligence adds private generative tutoring. Connecting an external provider is always optional.
+
+SEE YOUR AI TAKE SHAPE
+
+Every completed lesson, course component, and project milestone contributes to a living AI-construction visualization. Watch the neural system assemble as your skill grows.
+
+DESIGNED FOR SERIOUS PROGRESS
+
+Earn XP, build streaks, bookmark material, track skill readiness, choose daily goals, and move naturally between iPhone, iPad, and Mac.
+
+SUBSCRIPTION
+
+Ai_Engineering Pro includes a 14-day free introductory trial for eligible new subscribers, then renews monthly at the price shown in the app. Payment is charged to your Apple Account after confirmation. The subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Apple Account subscription settings.
+
+Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Privacy Policy: https://github.com/lukekevinmclaughlin-oss/Ai_Engineering/blob/main/PRIVACY.md
