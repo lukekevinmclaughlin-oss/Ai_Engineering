@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 // MARK: - Color
@@ -32,6 +33,56 @@ public enum AEColor {
 
     public static func readableAmber(_ scheme: ColorScheme) -> Color {
         scheme == .dark ? amber : Color(red: 0.54, green: 0.31, blue: 0.00)
+    }
+
+    /// Preserves a catalog item's hue while bringing bright accents into a
+    /// WCAG-readable range for small text on near-white surfaces.
+    public static func readableAccent(_ hex: String, _ scheme: ColorScheme) -> Color {
+        guard scheme == .light else { return Color(hex: hex) }
+
+        let cleaned = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        guard cleaned.count == 6,
+              let value = UInt64(cleaned, radix: 16) else { return readableViolet(scheme) }
+
+        let red = Double((value >> 16) & 0xFF) / 255
+        let green = Double((value >> 8) & 0xFF) / 255
+        let blue = Double(value & 0xFF) / 255
+        let maximumLuminance = 1.05 / 4.75 - 0.05
+
+        func linearized(_ component: Double) -> Double {
+            component <= 0.04045
+                ? component / 12.92
+                : pow((component + 0.055) / 1.055, 2.4)
+        }
+
+        func luminance(at scale: Double) -> Double {
+            0.2126 * linearized(red * scale)
+                + 0.7152 * linearized(green * scale)
+                + 0.0722 * linearized(blue * scale)
+        }
+
+        var scale = 1.0
+        if luminance(at: scale) > maximumLuminance {
+            var lower = 0.0
+            var upper = 1.0
+            for _ in 0..<16 {
+                let candidate = (lower + upper) / 2
+                if luminance(at: candidate) <= maximumLuminance {
+                    lower = candidate
+                } else {
+                    upper = candidate
+                }
+            }
+            scale = lower
+        }
+
+        return Color(
+            .sRGB,
+            red: red * scale,
+            green: green * scale,
+            blue: blue * scale,
+            opacity: 1
+        )
     }
 
     public static func canvas(_ scheme: ColorScheme) -> Color {
@@ -90,6 +141,32 @@ public enum AEColor {
 
     public static func shadow(_ scheme: ColorScheme) -> Color {
         scheme == .dark ? Color.black.opacity(0.52) : Color.indigo.opacity(0.13)
+    }
+
+    /// Low-emphasis fills for chips, rails, and selection rows.
+    public static func subtleFill(_ scheme: ColorScheme) -> Color {
+        scheme == .dark
+            ? Color.white.opacity(0.055)
+            : Color(red: 0.080, green: 0.120, blue: 0.210).opacity(0.055)
+    }
+
+    /// A slightly denser fill for editable fields and inset work areas.
+    public static func inputFill(_ scheme: ColorScheme) -> Color {
+        scheme == .dark
+            ? Color.black.opacity(0.22)
+            : Color.white.opacity(0.88)
+    }
+
+    public static func divider(_ scheme: ColorScheme) -> Color {
+        scheme == .dark
+            ? Color.white.opacity(0.075)
+            : Color(red: 0.080, green: 0.120, blue: 0.210).opacity(0.10)
+    }
+
+    public static func railFill(_ scheme: ColorScheme) -> Color {
+        scheme == .dark
+            ? Color.black.opacity(0.10)
+            : Color.white.opacity(0.36)
     }
 }
 

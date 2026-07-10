@@ -3,6 +3,7 @@ import SwiftUI
 struct TutorSettingsView: View {
     @ObservedObject var tutor: TutorCoordinator
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @State private var credential = ""
     @State private var apiStatus: String?
     @State private var localStatus: String?
@@ -49,13 +50,13 @@ struct TutorSettingsView: View {
                 Text("TUTOR SETTINGS")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1.2)
-                    .foregroundStyle(AEColor.violet)
+                    .foregroundStyle(AEColor.readableViolet(colorScheme))
                 Text("Choose how Tutor Core thinks")
                     .aeTextRole(.display)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
                 Text("Offline is the default. No account, key, or subscription is required.")
                     .font(.aeBody)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
             }
 
             Spacer()
@@ -71,14 +72,14 @@ struct TutorSettingsView: View {
         HStack(alignment: .top, spacing: AESpacing.md) {
             Image(systemName: "lock.shield.fill")
                 .font(.system(size: 22))
-                .foregroundStyle(AEColor.signal)
+                .foregroundStyle(AEColor.readableSignal(colorScheme))
             VStack(alignment: .leading, spacing: 5) {
                 Text("Local-first by design")
                     .font(.aeHeading)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
                 Text("Offline Core and Apple On-Device keep questions on this device. Ai_Engineering never silently falls through to a network service. Network access occurs only after you explicitly connect an API provider or local model server and select Connected Provider.")
                     .font(.aeCallout)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
             }
         }
         .padding(AESpacing.lg)
@@ -110,31 +111,31 @@ struct TutorSettingsView: View {
                 HStack {
                     Image(systemName: engine.systemImage)
                         .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(selected ? AEColor.signal : AEColor.violet)
+                        .foregroundStyle(selected ? AEColor.readableSignal(colorScheme) : AEColor.readableViolet(colorScheme))
                         .frame(width: 38, height: 38)
                         .background((selected ? AEColor.signal : AEColor.violet).opacity(0.12), in: RoundedRectangle(cornerRadius: 11))
                     Spacer()
                     Image(systemName: selected ? "checkmark.circle.fill" : "circle")
-                        .foregroundStyle(selected ? AEColor.signal : AEColor.textTertiary(.dark))
+                        .foregroundStyle(selected ? AEColor.readableSignal(colorScheme) : AEColor.textTertiary(colorScheme))
                 }
 
                 Text(engine.title)
                     .font(.aeHeading)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
                 Text(engine.detail)
                     .font(.aeCaption)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
                     .fixedSize(horizontal: false, vertical: true)
                 Text(status)
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
-                    .foregroundStyle(engine == .connectedProvider && tutor.providerIsReady ? AEColor.amber : AEColor.signal)
+                    .foregroundStyle(engine == .connectedProvider && tutor.providerIsReady ? AEColor.readableAmber(colorScheme) : AEColor.readableSignal(colorScheme))
             }
             .padding(AESpacing.md)
             .frame(maxWidth: .infinity, minHeight: 190, alignment: .topLeading)
-            .background(Color.white.opacity(selected ? 0.065 : 0.035), in: RoundedRectangle(cornerRadius: AERadius.medium))
+            .background(AEColor.subtleFill(colorScheme).opacity(selected ? 1.3 : 0.74), in: RoundedRectangle(cornerRadius: AERadius.medium))
             .overlay {
                 RoundedRectangle(cornerRadius: AERadius.medium)
-                    .stroke(selected ? AEColor.signal.opacity(0.55) : Color.white.opacity(0.08), lineWidth: 1)
+                    .stroke(selected ? AEColor.signal.opacity(0.55) : AEColor.stroke(colorScheme), lineWidth: 1)
             }
         }
         .buttonStyle(.plain)
@@ -189,8 +190,8 @@ struct TutorSettingsView: View {
         VStack(alignment: .leading, spacing: AESpacing.sm) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(title).font(.aeHeading).foregroundStyle(.white)
-                    Text(detail).font(.aeCaption).foregroundStyle(AEColor.textSecondary(.dark))
+                    Text(title).font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
+                    Text(detail).font(.aeCaption).foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
                 Spacer()
             }
@@ -204,7 +205,7 @@ struct TutorSettingsView: View {
             .labelsHidden()
         }
         .padding(AESpacing.md)
-        .background(Color.white.opacity(0.035), in: RoundedRectangle(cornerRadius: AERadius.medium))
+        .background(AEColor.subtleFill(colorScheme), in: RoundedRectangle(cornerRadius: AERadius.medium))
     }
 
     private func optionTitle<Option>(_ option: Option) -> String {
@@ -225,10 +226,10 @@ struct TutorSettingsView: View {
 
                 HStack(alignment: .top, spacing: AESpacing.sm) {
                     Image(systemName: "exclamationmark.shield.fill")
-                        .foregroundStyle(AEColor.amber)
+                        .foregroundStyle(AEColor.readableAmber(colorScheme))
                     Text("API keys are user-supplied, stored in this device’s Keychain, and bound to the selected endpoint origin. A key is never followed across a cross-origin redirect. Never embed a shared production key in the app.")
                         .font(.aeCaption)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -245,7 +246,7 @@ struct TutorSettingsView: View {
             )
 
             VStack(alignment: .leading, spacing: AESpacing.sm) {
-                Text("Provider").font(.aeLabel).foregroundStyle(.white)
+                Text("Provider").font(.aeLabel).foregroundStyle(AEColor.textPrimary(colorScheme))
                 Picker("API provider", selection: Binding(
                     get: { tutor.providerConfiguration.apiProvider },
                     set: { selectAPIProvider($0) }
@@ -259,8 +260,8 @@ struct TutorSettingsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(Color.black.opacity(0.22), in: RoundedRectangle(cornerRadius: 12))
-                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.10)))
+                .background(AEColor.inputFill(colorScheme), in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(AEColor.strokeStrong(colorScheme)))
             }
 
             if tutor.providerConfiguration.apiProvider == .customOpenAICompatible {
@@ -298,20 +299,20 @@ struct TutorSettingsView: View {
             )
 
             VStack(alignment: .leading, spacing: AESpacing.sm) {
-                Text("Your API key").font(.aeLabel).foregroundStyle(.white)
+                Text("Your API key").font(.aeLabel).foregroundStyle(AEColor.textPrimary(colorScheme))
                 SecureField(
                     tutor.credentialIsStored ? "A key is already stored for this origin" : "Stored in this device’s Keychain",
                     text: $credential
                 )
                 .textFieldStyle(.plain)
                 .padding(13)
-                .background(Color.black.opacity(0.22), in: RoundedRectangle(cornerRadius: 12))
-                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.10)))
+                .background(AEColor.inputFill(colorScheme), in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(AEColor.strokeStrong(colorScheme)))
 
                 if tutor.credentialIsStored {
                     Label("Key stored for \(TutorEndpointPolicy.origin(for: (try? TutorEndpointPolicy.validatedURL(tutor.providerConfiguration.endpoint)) ?? URL(string: "https://invalid.local")!))", systemImage: "lock.fill")
                         .font(.aeCaption)
-                        .foregroundStyle(AEColor.signal)
+                        .foregroundStyle(AEColor.readableSignal(colorScheme))
                 }
             }
 
@@ -323,7 +324,7 @@ struct TutorSettingsView: View {
             if let apiStatus {
                 Text(apiStatus)
                     .font(.aeCaption)
-                    .foregroundStyle(AEColor.signal)
+                    .foregroundStyle(AEColor.readableSignal(colorScheme))
             }
         }
         .padding(AESpacing.lg)
@@ -365,7 +366,7 @@ struct TutorSettingsView: View {
             }
             .buttonStyle(.plain)
             .font(.aeCaption)
-            .foregroundStyle(AEColor.textSecondary(.dark))
+            .foregroundStyle(AEColor.textSecondary(colorScheme))
         }
     }
 
@@ -405,13 +406,13 @@ struct TutorSettingsView: View {
                 if !detectedModels.isEmpty {
                     Label("\(detectedModels.count) model\(detectedModels.count == 1 ? "" : "s") found", systemImage: "checkmark.circle.fill")
                         .font(.aeCaption)
-                        .foregroundStyle(AEColor.signal)
+                        .foregroundStyle(AEColor.readableSignal(colorScheme))
                 }
             }
 
             if !localModelOptions.isEmpty {
                 VStack(alignment: .leading, spacing: AESpacing.sm) {
-                    Text("Detected model").font(.aeLabel).foregroundStyle(.white)
+                    Text("Detected model").font(.aeLabel).foregroundStyle(AEColor.textPrimary(colorScheme))
                     Picker("Detected model", selection: Binding(
                         get: { tutor.providerConfiguration.model },
                         set: { updateLocalModel($0) }
@@ -425,8 +426,8 @@ struct TutorSettingsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(Color.black.opacity(0.22), in: RoundedRectangle(cornerRadius: 12))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.10)))
+                    .background(AEColor.inputFill(colorScheme), in: RoundedRectangle(cornerRadius: 12))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(AEColor.strokeStrong(colorScheme)))
                 }
 
                 connectionValue(
@@ -452,25 +453,25 @@ struct TutorSettingsView: View {
             #if os(iOS)
             HStack(alignment: .top, spacing: AESpacing.sm) {
                 Image(systemName: "iphone.gen3")
-                    .foregroundStyle(AEColor.azure)
+                    .foregroundStyle(AEColor.readableAzure(colorScheme))
                 Text("On iPhone and iPad, localhost and 127.0.0.1 mean that iPhone or iPad—not your Mac. This same-machine detector cannot see Ollama or LM Studio running on your Mac. Use the macOS app for a Mac-hosted local server.")
                     .font(.aeCaption)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
             }
             #else
             HStack(alignment: .top, spacing: AESpacing.sm) {
                 Image(systemName: "desktopcomputer")
-                    .foregroundStyle(AEColor.azure)
+                    .foregroundStyle(AEColor.readableAzure(colorScheme))
                 Text("Detection checks only 127.0.0.1 on this Mac: Ollama on port 11434 or LM Studio on port 1234. It does not scan your LAN.")
                     .font(.aeCaption)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
             }
             #endif
 
             if let localStatus {
                 Text(localStatus)
                     .font(.aeCaption)
-                    .foregroundStyle(AEColor.signal)
+                    .foregroundStyle(AEColor.readableSignal(colorScheme))
             }
         }
         .padding(AESpacing.lg)
@@ -508,14 +509,14 @@ struct TutorSettingsView: View {
                 .background(AEColor.signal, in: Circle())
             Image(systemName: icon)
                 .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(AEColor.violet)
+                .foregroundStyle(AEColor.readableViolet(colorScheme))
                 .frame(width: 34, height: 34)
                 .background(AEColor.violet.opacity(0.11), in: RoundedRectangle(cornerRadius: 10))
             VStack(alignment: .leading, spacing: 4) {
-                Text(title).font(.aeHeading).foregroundStyle(.white)
+                Text(title).font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
                 Text(detail)
                     .font(.aeCaption)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
@@ -524,30 +525,30 @@ struct TutorSettingsView: View {
 
     private func connectionValue(label: String, value: String, icon: String) -> some View {
         VStack(alignment: .leading, spacing: AESpacing.sm) {
-            Text(label).font(.aeLabel).foregroundStyle(.white)
+            Text(label).font(.aeLabel).foregroundStyle(AEColor.textPrimary(colorScheme))
             HStack(spacing: AESpacing.sm) {
-                Image(systemName: icon).foregroundStyle(AEColor.azure)
+                Image(systemName: icon).foregroundStyle(AEColor.readableAzure(colorScheme))
                 Text(value)
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
                     .lineLimit(2)
                     .truncationMode(.middle)
                     .textSelection(.enabled)
                 Spacer()
             }
             .padding(13)
-            .background(Color.black.opacity(0.18), in: RoundedRectangle(cornerRadius: 12))
+            .background(AEColor.inputFill(colorScheme), in: RoundedRectangle(cornerRadius: 12))
         }
     }
 
     private func field(_ label: String, text: Binding<String>, prompt: String) -> some View {
         VStack(alignment: .leading, spacing: AESpacing.sm) {
-            Text(label).font(.aeLabel).foregroundStyle(.white)
+            Text(label).font(.aeLabel).foregroundStyle(AEColor.textPrimary(colorScheme))
             TextField(prompt, text: text)
                 .textFieldStyle(.plain)
                 .padding(13)
-                .background(Color.black.opacity(0.22), in: RoundedRectangle(cornerRadius: 12))
-                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.10)))
+                .background(AEColor.inputFill(colorScheme), in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(AEColor.strokeStrong(colorScheme)))
         }
     }
 
@@ -679,6 +680,7 @@ struct TutorSettingsView: View {
 }
 
 private struct SettingsSection<Content: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
     let eyebrow: String
     let title: String
     let detail: String
@@ -690,13 +692,13 @@ private struct SettingsSection<Content: View>: View {
                 Text(eyebrow)
                     .font(.system(size: 9, weight: .bold, design: .monospaced))
                     .tracking(1)
-                    .foregroundStyle(AEColor.violet)
+                    .foregroundStyle(AEColor.readableViolet(colorScheme))
                 Text(title)
                     .font(.aeTitle)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
                 Text(detail)
                     .font(.aeCallout)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
             }
             content
         }

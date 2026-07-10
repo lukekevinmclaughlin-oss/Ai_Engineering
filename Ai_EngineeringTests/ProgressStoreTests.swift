@@ -42,7 +42,38 @@ final class ProgressStoreTests: XCTestCase {
         }
     }
 
-    private func withIsolatedDefaults(_ body: (UserDefaults) -> Void) {
+    func testMilestoneProgressIsScopedToItsProject() {
+        withIsolatedDefaults { defaults in
+            let store = ProgressStore(defaults: defaults)
+            let first = makeProject(id: "first", milestoneID: "schema")
+            let second = makeProject(id: "second", milestoneID: "schema")
+
+            store.toggleMilestone(first.milestones[0], in: first)
+
+            XCTAssertTrue(store.isMilestoneCompleted(first.milestones[0], in: first))
+            XCTAssertFalse(store.isMilestoneCompleted(second.milestones[0], in: second))
+            XCTAssertEqual(store.value.completedMilestoneIDs, ["first::schema"])
+        }
+    }
+
+    func testLegacyMilestoneProgressMigratesWithoutLosingDuplicateMatches() throws {
+        try withIsolatedDefaults { defaults in
+            let storageKey = "legacy-progress"
+            var legacy = LearnerProgress()
+            legacy.completedMilestoneIDs = ["schema"]
+            defaults.set(try JSONEncoder().encode(legacy), forKey: storageKey)
+
+            let first = makeProject(id: "first", milestoneID: "schema")
+            let second = makeProject(id: "second", milestoneID: "schema")
+            let store = ProgressStore(defaults: defaults, storageKey: storageKey)
+            store.migrateLegacyMilestoneIDs(projects: [first, second])
+
+            XCTAssertEqual(store.value.completedMilestoneIDs, ["first::schema", "second::schema"])
+            XCTAssertFalse(store.value.completedMilestoneIDs.contains("schema"))
+        }
+    }
+
+    private func withIsolatedDefaults(_ body: (UserDefaults) throws -> Void) rethrows {
         let suiteName = "AiEngineeringTests.\(UUID().uuidString)"
         guard let defaults = UserDefaults(suiteName: suiteName) else {
             XCTFail("Could not create isolated UserDefaults")
@@ -50,7 +81,7 @@ final class ProgressStoreTests: XCTestCase {
         }
         defaults.removePersistentDomain(forName: suiteName)
         defer { defaults.removePersistentDomain(forName: suiteName) }
-        body(defaults)
+        try body(defaults)
     }
 
     private func makeLesson(id: String, xp: Int) -> Lesson {
@@ -79,6 +110,33 @@ final class ProgressStoreTests: XCTestCase {
             isFeatured: true,
             skills: ["Systems"],
             modules: [.init(id: "module", title: "Module", summary: "Test", lessons: lessons)]
+        )
+    }
+
+
+    private func makeProject(id: String, milestoneID: String) -> LabProject {
+        LabProject(
+            id: id,
+            title: "Project \(id)",
+            subtitle: "Test project",
+            summary: "A project used to verify progress identity.",
+            icon: "hammer.fill",
+            accent: "61FAC4",
+            difficulty: "Beginner",
+            estimatedHours: 1,
+            xp: 100,
+            skills: ["Testing"],
+            outcomes: ["Verify progress"],
+            milestones: [
+                ProjectMilestone(
+                    id: milestoneID,
+                    title: "Schema",
+                    detail: "Define the schema.",
+                    systemImage: "tablecells"
+                )
+            ],
+            brief: "Test brief",
+            starterFiles: []
         )
     }
 }

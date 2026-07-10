@@ -9,7 +9,7 @@ struct AiEngineeringApp: App {
             RootView()
                 .environmentObject(state)
                 .tint(AEColor.signal)
-                .preferredColorScheme(.dark)
+                .preferredColorScheme(state.appearance.colorScheme)
         }
         #if os(macOS)
         .defaultSize(width: 1_280, height: 820)

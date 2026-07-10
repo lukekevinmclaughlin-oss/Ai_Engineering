@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProjectCatalogView: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
     @State private var selectedLevel = "All"
     @State private var searchText = ""
 
@@ -49,11 +50,11 @@ struct ProjectCatalogView: View {
                         Text(showsFeaturedProject ? "ALL BUILDS" : "MATCHING BUILDS")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
                             .tracking(1.1)
-                            .foregroundStyle(AEColor.coral)
+                            .foregroundStyle(AEColor.readableCoral(colorScheme))
                         Spacer()
                         Text("\(projects.count) PROJECT\(projects.count == 1 ? "" : "S")")
                             .font(.system(size: 9, weight: .bold, design: .monospaced))
-                            .foregroundStyle(AEColor.textTertiary(.dark))
+                            .foregroundStyle(AEColor.textTertiary(colorScheme))
                     }
 
                     if gridProjects.isEmpty {
@@ -100,14 +101,14 @@ struct ProjectCatalogView: View {
                 Text("PROJECT LAB / LIVE")
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
                     .tracking(1.3)
-                    .foregroundStyle(AEColor.coral)
+                    .foregroundStyle(AEColor.readableCoral(colorScheme))
             }
             Text("Build proof, not toy demos.")
                 .aeTextRole(.display)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             Text("Start with a fully guided beginner build, then progress through intermediate systems and advanced portfolio work at your own pace.")
                 .aeTextRole(.body)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
                 .frame(maxWidth: 760, alignment: .leading)
 
             HStack(spacing: AESpacing.lg) {
@@ -167,10 +168,10 @@ struct ProjectCatalogView: View {
                     }
                     .font(.aeLabel)
                     .buttonStyle(.plain)
-                    .foregroundStyle(selectedLevel == level ? Color.black.opacity(0.8) : AEColor.textSecondary(.dark))
+                    .foregroundStyle(selectedLevel == level ? Color.black.opacity(0.8) : AEColor.textSecondary(colorScheme))
                     .padding(.horizontal, AESpacing.md)
                     .padding(.vertical, 9)
-                    .background(selectedLevel == level ? AnyShapeStyle(AEGradient.signal) : AnyShapeStyle(Color.white.opacity(0.055)), in: Capsule())
+                    .background(selectedLevel == level ? AnyShapeStyle(AEGradient.signal) : AnyShapeStyle(AEColor.subtleFill(colorScheme)), in: Capsule())
                 }
             }
         }
@@ -196,8 +197,8 @@ struct ProjectCatalogView: View {
                     }
                 }
                 .padding(AESpacing.xl)
-                .background(Color(hex: "0B1120"), in: RoundedRectangle(cornerRadius: 28))
-                .overlay(RoundedRectangle(cornerRadius: 28).stroke(LinearGradient(colors: [accent.opacity(0.4), .white.opacity(0.055)], startPoint: .topLeading, endPoint: .bottomTrailing)))
+                .background(AEColor.surfaceElevated(colorScheme), in: RoundedRectangle(cornerRadius: 28))
+                .overlay(RoundedRectangle(cornerRadius: 28).stroke(LinearGradient(colors: [accent.opacity(0.4), AEColor.stroke(colorScheme)], startPoint: .topLeading, endPoint: .bottomTrailing)))
             }
             .buttonStyle(.plain)
         }
@@ -205,6 +206,7 @@ struct ProjectCatalogView: View {
 }
 
 private struct ProjectCatalogStat: View {
+    @Environment(\.colorScheme) private var colorScheme
     let value: String
     let label: String
 
@@ -212,15 +214,16 @@ private struct ProjectCatalogStat: View {
         HStack(alignment: .firstTextBaseline, spacing: 5) {
             Text(value)
                 .font(.system(size: 20, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             Text(label)
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
         }
     }
 }
 
 private struct ProjectPathStep: View {
+    @Environment(\.colorScheme) private var colorScheme
     let level: String
     let detail: String
     let icon: String
@@ -229,12 +232,20 @@ private struct ProjectPathStep: View {
     let isSelected: Bool
     let action: () -> Void
 
+    private var textAccent: Color {
+        switch level {
+        case "Beginner": AEColor.readableSignal(colorScheme)
+        case "Intermediate": AEColor.readableViolet(colorScheme)
+        default: AEColor.readableAmber(colorScheme)
+        }
+    }
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: AESpacing.md) {
                 Image(systemName: icon)
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(accent)
+                    .foregroundStyle(textAccent)
                     .frame(width: 42, height: 42)
                     .background(accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
 
@@ -242,24 +253,24 @@ private struct ProjectPathStep: View {
                     HStack {
                         Text(level)
                             .font(.aeHeading)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(AEColor.textPrimary(colorScheme))
                         Spacer(minLength: AESpacing.xs)
                         Text("\(count)")
                             .font(.system(size: 11, weight: .bold, design: .monospaced))
-                            .foregroundStyle(accent)
+                            .foregroundStyle(textAccent)
                     }
                     Text(detail)
                         .font(.aeCaption)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                         .multilineTextAlignment(.leading)
                 }
             }
             .padding(AESpacing.md)
             .frame(maxWidth: .infinity, minHeight: 88, alignment: .leading)
-            .background(Color.white.opacity(isSelected ? 0.07 : 0.035), in: RoundedRectangle(cornerRadius: AERadius.medium))
+            .background(AEColor.subtleFill(colorScheme).opacity(isSelected ? 1.35 : 0.78), in: RoundedRectangle(cornerRadius: AERadius.medium))
             .overlay {
                 RoundedRectangle(cornerRadius: AERadius.medium)
-                    .stroke(isSelected ? accent.opacity(0.6) : Color.white.opacity(0.08))
+                    .stroke(isSelected ? accent.opacity(0.6) : AEColor.stroke(colorScheme))
             }
         }
         .buttonStyle(.plain)
@@ -268,21 +279,24 @@ private struct ProjectPathStep: View {
 }
 
 private struct FeaturedProjectCopy: View {
+    @Environment(\.colorScheme) private var colorScheme
     let project: LabProject
     let accent: Color
+
+    private var textAccent: Color { AEColor.readableAccent(project.accent, colorScheme) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: AESpacing.md) {
             Text(project.difficulty == "Beginner" ? "START HERE · GUIDED BUILD" : "RECOMMENDED CAPSTONE")
                 .font(.system(size: 10, weight: .bold, design: .monospaced))
                 .tracking(1.1)
-                .foregroundStyle(accent)
+                .foregroundStyle(textAccent)
             Text(project.title)
                 .aeTextRole(.display)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             Text(project.summary)
                 .font(.aeBody)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
                 .frame(maxWidth: 560, alignment: .leading)
             HStack(spacing: AESpacing.md) {
                 Label("\(project.estimatedHours) hours", systemImage: "clock.fill")
@@ -290,10 +304,10 @@ private struct FeaturedProjectCopy: View {
                 Label("\(project.xp) XP", systemImage: "bolt.fill")
             }
             .font(.aeCaption)
-            .foregroundStyle(AEColor.textTertiary(.dark))
+            .foregroundStyle(AEColor.textTertiary(colorScheme))
             Label("Open project workspace", systemImage: "arrow.right")
                 .font(.aeLabel)
-                .foregroundStyle(accent)
+                .foregroundStyle(textAccent)
         }
     }
 }
@@ -336,6 +350,7 @@ private struct ProjectArchitectureVisual: View {
 }
 
 private struct ArchitectureNode: View {
+    @Environment(\.colorScheme) private var colorScheme
     let icon: String
     let label: String
     let accent: Color
@@ -352,47 +367,49 @@ private struct ArchitectureNode: View {
             Text(label)
                 .font(.system(size: 8, weight: .bold, design: .monospaced))
                 .tracking(0.7)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
         }
     }
 }
 
 private struct ProjectCard: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
     let project: LabProject
 
     private var completed: Int {
-        project.milestones.filter { state.progress.isMilestoneCompleted($0) }.count
+        project.milestones.filter { state.progress.isMilestoneCompleted($0, in: project) }.count
     }
 
     var body: some View {
         let accent = Color(hex: project.accent)
+        let textAccent = AEColor.readableAccent(project.accent, colorScheme)
         VStack(alignment: .leading, spacing: AESpacing.md) {
             HStack {
                 Image(systemName: project.icon)
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(accent)
+                    .foregroundStyle(textAccent)
                     .frame(width: 48, height: 48)
                     .background(accent.opacity(0.11), in: RoundedRectangle(cornerRadius: 14))
                 Spacer()
                 Text(project.difficulty.uppercased())
                     .font(.system(size: 9, weight: .bold, design: .monospaced))
                     .tracking(0.8)
-                    .foregroundStyle(accent)
+                    .foregroundStyle(textAccent)
             }
 
             Text(project.subtitle.uppercased())
                 .font(.system(size: 9, weight: .bold, design: .monospaced))
                 .tracking(0.8)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
             Text(project.title)
                 .font(.aeTitle)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
             Text(project.summary)
                 .font(.aeCallout)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -400,10 +417,10 @@ private struct ProjectCard: View {
                 ForEach(project.skills.prefix(4), id: \.self) { skill in
                     Text(skill)
                         .font(.aeCaption)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                         .padding(.horizontal, 9)
                         .padding(.vertical, 5)
-                        .background(Color.white.opacity(0.05), in: Capsule())
+                        .background(AEColor.subtleFill(colorScheme), in: Capsule())
                 }
             }
 
@@ -413,10 +430,10 @@ private struct ProjectCard: View {
                 Spacer()
                 Text("\(completed)/\(project.milestones.count) milestones")
                 Spacer()
-                Image(systemName: "arrow.up.right").foregroundStyle(accent)
+                Image(systemName: "arrow.up.right").foregroundStyle(textAccent)
             }
             .font(.aeCaption)
-            .foregroundStyle(AEColor.textTertiary(.dark))
+            .foregroundStyle(AEColor.textTertiary(colorScheme))
             ProgressView(value: Double(completed), total: Double(project.milestones.count)).tint(accent)
         }
         .padding(AESpacing.lg)

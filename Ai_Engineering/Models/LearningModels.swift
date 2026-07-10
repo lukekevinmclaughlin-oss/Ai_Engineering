@@ -128,6 +128,14 @@ struct ProjectMilestone: Identifiable, Hashable, Sendable {
     let title: String
     let detail: String
     let systemImage: String
+
+    /// Stable progress identity scoped to the project that owns this milestone.
+    /// Milestone slugs are intentionally reusable across projects (for example,
+    /// several builds contain a `schema` step), so the raw milestone ID alone is
+    /// not safe for persistence.
+    func progressID(projectID: String) -> String {
+        "\(projectID)::\(id)"
+    }
 }
 
 struct StarterFile: Identifiable, Hashable, Sendable {

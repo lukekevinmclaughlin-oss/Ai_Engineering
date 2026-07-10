@@ -9,13 +9,15 @@ The same target runs on iPhone, iPad, and macOS. iOS uses a compact tab-based ex
 ## What is included
 
 - Frontier-style adaptive design system with animated neural graphics, glass surfaces, grid fields, semantic color, and a complete app icon set
+- System, light, and dark appearance controls available directly from the main navigation UI
+- Live AI assembly visualization that turns verified lessons, completed courses, and project milestones into a progressively constructed neural system
 - Home learning terminal with a featured path, daily target, momentum, course progress, and skill signal
 - Searchable and filterable course catalog
 - Detailed course maps with module and lesson completion
-- Interactive lesson player with concept blocks, code samples, quizzes, architecture choices, code editing, local checks, hints, explanations, and completion celebrations
+- Interactive lesson player with animated concept diagrams, architecture maps, syntax-highlighted code samples and editors, quizzes, local checks, hints, explanations, and AI-component completion celebrations
 - Tutor Core: a curriculum-grounded AI tutor with an always-available offline engine, private Apple on-device generation on supported hardware, lesson/project context, novice and engineer teaching modes, and deep-dive answers
 - Persistent local XP, daily goals, streaks, bookmarks, lesson completion, skill XP, and project milestones
-- Project Lab with 40 realistic briefs, outcomes, milestones, editable starter files, and simulated local quality checks
+- Project Lab with 40 realistic briefs, outcomes, project-scoped milestones, syntax-highlighted editable starter files, and simulated local quality checks
 - Progress profile with role readiness, skill matrix, levels, and adjustable learning goals
 - Shared unit tests for curriculum integrity and progress persistence
 

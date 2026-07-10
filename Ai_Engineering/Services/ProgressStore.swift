@@ -50,8 +50,8 @@ final class ProgressStore: ObservableObject {
         value.completedLessonIDs.contains(lesson.id)
     }
 
-    func isMilestoneCompleted(_ milestone: ProjectMilestone) -> Bool {
-        value.completedMilestoneIDs.contains(milestone.id)
+    func isMilestoneCompleted(_ milestone: ProjectMilestone, in project: LabProject) -> Bool {
+        value.completedMilestoneIDs.contains(milestone.progressID(projectID: project.id))
     }
 
     func isBookmarked(_ course: Course) -> Bool {
@@ -90,12 +90,41 @@ final class ProgressStore: ObservableObject {
         persist()
     }
 
-    func toggleMilestone(_ milestone: ProjectMilestone) {
-        if value.completedMilestoneIDs.contains(milestone.id) {
-            value.completedMilestoneIDs.remove(milestone.id)
+    func toggleMilestone(_ milestone: ProjectMilestone, in project: LabProject) {
+        let progressID = milestone.progressID(projectID: project.id)
+        if value.completedMilestoneIDs.contains(progressID) {
+            value.completedMilestoneIDs.remove(progressID)
         } else {
-            value.completedMilestoneIDs.insert(milestone.id)
+            value.completedMilestoneIDs.insert(progressID)
         }
+        persist()
+    }
+
+    /// Upgrades progress written by early builds, where milestone IDs were not
+    /// scoped to their project. A legacy ID is expanded to every catalog match,
+    /// preserving what the learner previously saw as completed.
+    func migrateLegacyMilestoneIDs(projects: [LabProject]) {
+        let legacyIDs = value.completedMilestoneIDs.filter { !$0.contains("::") }
+        guard !legacyIDs.isEmpty else { return }
+
+        var migrated = value.completedMilestoneIDs
+        var didChange = false
+
+        for legacyID in legacyIDs {
+            let matches = projects.flatMap { project in
+                project.milestones
+                    .filter { $0.id == legacyID }
+                    .map { $0.progressID(projectID: project.id) }
+            }
+            guard !matches.isEmpty else { continue }
+
+            migrated.remove(legacyID)
+            migrated.formUnion(matches)
+            didChange = true
+        }
+
+        guard didChange else { return }
+        value.completedMilestoneIDs = migrated
         persist()
     }
 

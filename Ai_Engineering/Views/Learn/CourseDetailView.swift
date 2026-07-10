@@ -2,8 +2,10 @@ import SwiftUI
 
 struct CourseDetailView: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
     let course: Course
     private var accent: Color { Color(hex: course.accent) }
+    private var textAccent: Color { AEColor.readableAccent(course.accent, colorScheme) }
 
     var body: some View {
         ZStack {
@@ -54,10 +56,10 @@ struct CourseDetailView: View {
                 ForEach(course.skills, id: \.self) { skill in
                     Label(skill, systemImage: "checkmark.circle.fill")
                         .font(.aeCaption)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(Color.white.opacity(0.055), in: Capsule())
+                        .background(AEColor.subtleFill(colorScheme), in: Capsule())
                 }
             }
 
@@ -92,15 +94,15 @@ struct CourseDetailView: View {
             }
             .font(.system(size: 10, weight: .bold, design: .monospaced))
             .tracking(1.1)
-            .foregroundStyle(accent)
+            .foregroundStyle(textAccent)
 
             Text(course.title)
                 .aeTextRole(.hero)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
 
             Text(course.summary)
                 .aeTextRole(.body)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
                 .frame(maxWidth: 670, alignment: .leading)
         }
     }
@@ -137,7 +139,7 @@ struct CourseDetailView: View {
             ProgressView(value: state.progress.courseProgress(course)).tint(accent)
             Text("\(Int(state.progress.courseProgress(course) * 100))% complete")
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
         }
         .frame(maxWidth: 220)
     }
@@ -148,10 +150,10 @@ struct CourseDetailView: View {
                 Text("CURRICULUM")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1.1)
-                    .foregroundStyle(Color(hex: course.accent))
+                    .foregroundStyle(textAccent)
                 Text("Build the system, layer by layer")
                     .font(.aeTitle)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
             }
 
             ForEach(Array(course.modules.enumerated()), id: \.element.id) { moduleIndex, module in
@@ -171,45 +173,48 @@ struct CourseDetailView: View {
 }
 
 private struct CourseHeroStat: View {
+    @Environment(\.colorScheme) private var colorScheme
     let value: String
     let label: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(value).font(.aeHeading).foregroundStyle(.white)
-            Text(label).font(.aeCaption).foregroundStyle(AEColor.textTertiary(.dark))
+            Text(value).font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
+            Text(label).font(.aeCaption).foregroundStyle(AEColor.textTertiary(colorScheme))
         }
     }
 }
 
 private struct ModuleCard: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
     let course: Course
     let module: LearningModule
     let moduleIndex: Int
 
     var body: some View {
         let accent = Color(hex: course.accent)
+        let textAccent = AEColor.readableAccent(course.accent, colorScheme)
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: AESpacing.md) {
                 Text(String(format: "%02d", moduleIndex + 1))
                     .font(.system(size: 12, weight: .bold, design: .monospaced))
-                    .foregroundStyle(accent)
+                    .foregroundStyle(textAccent)
                     .frame(width: 36, height: 36)
                     .background(accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(module.title).font(.aeHeading).foregroundStyle(.white)
-                    Text(module.summary).font(.aeCallout).foregroundStyle(AEColor.textSecondary(.dark))
+                    Text(module.title).font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
+                    Text(module.summary).font(.aeCallout).foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
                 Spacer()
                 Text("\(state.progress.completedLessons(in: module))/\(module.lessons.count)")
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
-                    .foregroundStyle(AEColor.textTertiary(.dark))
+                    .foregroundStyle(AEColor.textTertiary(colorScheme))
             }
             .padding(AESpacing.lg)
 
-            Divider().overlay(Color.white.opacity(0.06))
+            Divider().overlay(AEColor.divider(colorScheme))
 
             VStack(spacing: 0) {
                 ForEach(Array(module.lessons.enumerated()), id: \.element.id) { lessonIndex, lesson in
@@ -221,7 +226,7 @@ private struct ModuleCard: View {
                     .buttonStyle(.plain)
 
                     if lesson.id != module.lessons.last?.id {
-                        Divider().overlay(Color.white.opacity(0.045)).padding(.leading, 72)
+                        Divider().overlay(AEColor.divider(colorScheme).opacity(0.72)).padding(.leading, 72)
                     }
                 }
             }
@@ -231,6 +236,7 @@ private struct ModuleCard: View {
 }
 
 private struct LessonRow: View {
+    @Environment(\.colorScheme) private var colorScheme
     let lesson: Lesson
     let index: Int
     let isCompleted: Bool
@@ -240,7 +246,7 @@ private struct LessonRow: View {
         HStack(spacing: AESpacing.md) {
             ZStack {
                 Circle()
-                    .fill(isCompleted ? accent : Color.white.opacity(0.055))
+                    .fill(isCompleted ? accent : AEColor.subtleFill(colorScheme))
                 Image(systemName: isCompleted ? "checkmark" : lesson.kind.systemImage)
                     .font(.system(size: 11, weight: .bold))
                     .foregroundStyle(isCompleted ? Color.black.opacity(0.75) : accent)
@@ -250,7 +256,7 @@ private struct LessonRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(lesson.title)
                     .font(.aeCallout)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
                 HStack(spacing: 6) {
                     Text(lesson.kind.title)
                     Text("·")
@@ -259,12 +265,12 @@ private struct LessonRow: View {
                     Text("+\(lesson.xp) XP")
                 }
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
             }
             Spacer()
             Image(systemName: "chevron.right")
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
         }
         .padding(.horizontal, AESpacing.lg)
         .padding(.vertical, AESpacing.md)

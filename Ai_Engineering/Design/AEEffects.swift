@@ -5,6 +5,7 @@ import SwiftUI
 /// A reusable scene background with a restrained technical grid and aurora glow.
 public struct AEFrontierBackground: View {
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let accent: Color
     private let intensity: Double
@@ -21,34 +22,47 @@ public struct AEFrontierBackground: View {
     }
 
     public var body: some View {
-        ZStack {
-            AEColor.canvas(colorScheme)
+        TimelineView(
+            .animation(
+                minimumInterval: ProcessInfo.processInfo.isLowPowerModeEnabled ? 0.5 : 1.0 / 15.0,
+                paused: reduceMotion
+            )
+        ) { timeline in
+            let seconds = timeline.date.timeIntervalSinceReferenceDate
+            let phase = reduceMotion ? 0.38 : seconds.truncatingRemainder(dividingBy: 12) / 12
+            let drift = reduceMotion ? 0 : sin(seconds / 4.5)
 
-            GeometryReader { proxy in
-                let width = max(proxy.size.width, 1)
-                let height = max(proxy.size.height, 1)
+            ZStack {
+                AEColor.canvas(colorScheme)
 
-                glowOrb(color: accent, diameter: max(width * 0.72, 360))
-                    .offset(x: width * 0.32, y: -height * 0.30)
+                GeometryReader { proxy in
+                    let width = max(proxy.size.width, 1)
+                    let height = max(proxy.size.height, 1)
 
-                glowOrb(color: AEColor.azure, diameter: max(width * 0.58, 300))
-                    .offset(x: -width * 0.36, y: height * 0.33)
+                    glowOrb(color: accent, diameter: max(width * 0.72, 360))
+                        .offset(x: width * 0.32 + drift * 14, y: -height * 0.30 + drift * 8)
 
-                if showsGrid {
-                    AEGridOverlay()
-                        .mask(
-                            LinearGradient(
-                                colors: [.clear, .white.opacity(0.9), .clear],
-                                startPoint: .top,
-                                endPoint: .bottom
+                    glowOrb(color: AEColor.azure, diameter: max(width * 0.58, 300))
+                        .offset(x: -width * 0.36 - drift * 10, y: height * 0.33 - drift * 7)
+
+                    if showsGrid {
+                        AEGridOverlay()
+                            .mask(
+                                LinearGradient(
+                                    colors: [.clear, .white.opacity(0.9), .clear],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
                             )
-                        )
+
+                        AEAmbientScanOverlay(accent: accent, phase: phase)
+                    }
                 }
             }
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
         }
-        .ignoresSafeArea()
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
     }
 
     private func glowOrb(color: Color, diameter: CGFloat) -> some View {
@@ -67,6 +81,48 @@ public struct AEFrontierBackground: View {
             )
             .frame(width: diameter, height: diameter)
             .blur(radius: 22)
+    }
+}
+
+private struct AEAmbientScanOverlay: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    let accent: Color
+    let phase: Double
+
+    var body: some View {
+        GeometryReader { proxy in
+            let travel = proxy.size.height + 220
+            let y = -110 + travel * phase
+
+            ZStack {
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [.clear, accent.opacity(colorScheme == .dark ? 0.060 : 0.035), .clear],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(height: 110)
+                    .offset(y: y)
+
+                Canvas { context, size in
+                    let points = [
+                        CGPoint(x: size.width * 0.16, y: size.height * 0.24),
+                        CGPoint(x: size.width * 0.78, y: size.height * 0.18),
+                        CGPoint(x: size.width * 0.64, y: size.height * 0.72),
+                        CGPoint(x: size.width * 0.30, y: size.height * 0.82)
+                    ]
+                    for (index, point) in points.enumerated() {
+                        let pulse = 2.0 + 1.4 * sin((phase * .pi * 2) + Double(index))
+                        let rect = CGRect(x: point.x - pulse, y: point.y - pulse, width: pulse * 2, height: pulse * 2)
+                        context.fill(Path(ellipseIn: rect), with: .color(accent.opacity(colorScheme == .dark ? 0.20 : 0.12)))
+                    }
+                }
+            }
+        }
+        .clipped()
     }
 }
 
@@ -163,7 +219,9 @@ private struct AEGlassSurfaceModifier: ViewModifier {
                     .strokeBorder(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(colorScheme == .dark ? borderOpacity : borderOpacity * 0.75),
+                                colorScheme == .dark
+                                    ? Color.white.opacity(borderOpacity)
+                                    : Color.indigo.opacity(borderOpacity * 0.62),
                                 AEColor.stroke(colorScheme)
                             ],
                             startPoint: .topLeading,

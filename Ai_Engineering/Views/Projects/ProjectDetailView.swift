@@ -11,9 +11,24 @@ struct ProjectDetailView: View {
     @State private var isRunning = false
     @State private var showTutor = false
 
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     private var accent: Color { Color(hex: project.accent) }
+    private var textAccent: Color { AEColor.readableAccent(project.accent, colorScheme) }
     private var completedMilestones: Int {
-        project.milestones.filter { state.progress.isMilestoneCompleted($0) }.count
+        project.milestones.filter { state.progress.isMilestoneCompleted($0, in: project) }.count
+    }
+    private var selectedFile: StarterFile? {
+        guard project.starterFiles.indices.contains(selectedFileIndex) else { return nil }
+        return project.starterFiles[selectedFileIndex]
+    }
+    private var selectedLanguage: CodeLanguage {
+        CodeLanguage.inferred(
+            from: editorText,
+            hint: selectedFile?.language,
+            fileName: selectedFile?.name
+        )
     }
 
     var body: some View {
@@ -67,13 +82,13 @@ struct ProjectDetailView: View {
                     Text("BEGINNER BUILD · FULLY GUIDED")
                         .font(.system(size: 9, weight: .bold, design: .monospaced))
                         .tracking(1)
-                        .foregroundStyle(AEColor.signal)
+                        .foregroundStyle(AEColor.readableSignal(colorScheme))
                     Text("No setup or previous coding experience required")
                         .font(.aeHeading)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AEColor.textPrimary(colorScheme))
                     Text("Read the brief, complete one milestone at a time, then edit the annotated starter files. Ask Tutor can explain any word, line, or error using only basic arithmetic.")
                         .font(.aeCallout)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
             }
 
@@ -92,7 +107,7 @@ struct ProjectDetailView: View {
             HStack(alignment: .top, spacing: AESpacing.lg) {
                 Image(systemName: project.icon)
                     .font(.system(size: 30, weight: .semibold))
-                    .foregroundStyle(accent)
+                    .foregroundStyle(textAccent)
                     .frame(width: 76, height: 76)
                     .background(accent.opacity(0.11), in: RoundedRectangle(cornerRadius: 22))
                     .overlay(RoundedRectangle(cornerRadius: 22).stroke(accent.opacity(0.28)))
@@ -102,13 +117,13 @@ struct ProjectDetailView: View {
                     Text("PROJECT BRIEF · \(project.difficulty.uppercased())")
                         .font(.system(size: 10, weight: .bold, design: .monospaced))
                         .tracking(1.1)
-                        .foregroundStyle(accent)
+                        .foregroundStyle(textAccent)
                     Text(project.title)
                         .aeTextRole(.display)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(AEColor.textPrimary(colorScheme))
                     Text(project.summary)
                         .font(.aeBody)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
                 Spacer()
             }
@@ -132,11 +147,11 @@ struct ProjectDetailView: View {
                 Text("PROJECT WORKSPACE")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1.1)
-                    .foregroundStyle(accent)
+                    .foregroundStyle(textAccent)
                 Spacer()
                 Label("LOCAL SANDBOX", systemImage: "lock.shield.fill")
                     .font(.system(size: 9, weight: .bold, design: .monospaced))
-                    .foregroundStyle(AEColor.textTertiary(.dark))
+                    .foregroundStyle(AEColor.textTertiary(colorScheme))
             }
 
             Picker("Workspace section", selection: $selectedWorkspaceTab) {
@@ -153,19 +168,19 @@ struct ProjectDetailView: View {
                 default: codeWorkspace
                 }
             }
-            .animation(AEMotion.quick, value: selectedWorkspaceTab)
+            .animation(reduceMotion ? nil : AEMotion.quick, value: selectedWorkspaceTab)
         }
     }
 
     private var briefView: some View {
         ViewThatFits(in: .horizontal) {
             HStack(alignment: .top, spacing: AESpacing.lg) {
-                ProjectBriefCopy(project: project, accent: accent).frame(minWidth: 320)
-                OutcomeChecklist(project: project, accent: accent).frame(minWidth: 320)
+                ProjectBriefCopy(project: project, accent: accent, textAccent: textAccent).frame(minWidth: 320)
+                OutcomeChecklist(project: project, accent: accent, textAccent: textAccent).frame(minWidth: 320)
             }
             VStack(alignment: .leading, spacing: AESpacing.lg) {
-                ProjectBriefCopy(project: project, accent: accent)
-                OutcomeChecklist(project: project, accent: accent)
+                ProjectBriefCopy(project: project, accent: accent, textAccent: textAccent)
+                OutcomeChecklist(project: project, accent: accent, textAccent: textAccent)
             }
         }
     }
@@ -173,29 +188,31 @@ struct ProjectDetailView: View {
     private var milestonesView: some View {
         VStack(spacing: AESpacing.sm) {
             ForEach(Array(project.milestones.enumerated()), id: \.element.id) { index, milestone in
-                let completed = state.progress.isMilestoneCompleted(milestone)
+                let completed = state.progress.isMilestoneCompleted(milestone, in: project)
                 Button {
-                    withAnimation(AEMotion.standard) { state.progress.toggleMilestone(milestone) }
+                    withAnimation(reduceMotion ? nil : AEMotion.standard) {
+                        state.progress.toggleMilestone(milestone, in: project)
+                    }
                 } label: {
                     HStack(spacing: AESpacing.md) {
                         ZStack {
-                            Circle().fill(completed ? accent : Color.white.opacity(0.055))
+                            Circle().fill(completed ? accent : AEColor.surface(colorScheme))
                             Image(systemName: completed ? "checkmark" : milestone.systemImage)
                                 .font(.system(size: 12, weight: .bold))
-                                .foregroundStyle(completed ? Color.black.opacity(0.76) : accent)
+                                .foregroundStyle(completed ? Color.black.opacity(0.76) : textAccent)
                         }
                         .frame(width: 40, height: 40)
                         VStack(alignment: .leading, spacing: 3) {
                             Text("\(index + 1). \(milestone.title)")
                                 .font(.aeHeading)
-                                .foregroundStyle(.white)
+                                .foregroundStyle(AEColor.textPrimary(colorScheme))
                             Text(milestone.detail)
                                 .font(.aeCallout)
-                                .foregroundStyle(AEColor.textSecondary(.dark))
+                                .foregroundStyle(AEColor.textSecondary(colorScheme))
                         }
                         Spacer()
                         Image(systemName: completed ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(completed ? accent : AEColor.textTertiary(.dark))
+                            .foregroundStyle(completed ? textAccent : AEColor.textTertiary(colorScheme))
                     }
                     .padding(AESpacing.md)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -217,64 +234,68 @@ struct ProjectDetailView: View {
                     } label: {
                         Label(file.name, systemImage: "doc.text.fill")
                             .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                            .foregroundStyle(selectedFileIndex == index ? .white : AEColor.textTertiary(.dark))
+                            .foregroundStyle(selectedFileIndex == index ? AEColor.textPrimary(colorScheme) : AEColor.textTertiary(colorScheme))
                             .padding(.horizontal, AESpacing.md)
                             .padding(.vertical, 11)
-                            .background(selectedFileIndex == index ? Color.white.opacity(0.075) : .clear)
+                            .background(selectedFileIndex == index ? AEColor.surfaceElevated(colorScheme) : .clear)
                     }
                     .buttonStyle(.plain)
+                    .disabled(isRunning)
                 }
                 Spacer()
                 Button(action: resetCurrentFile) {
                     Label("Reset", systemImage: "arrow.counterclockwise")
                         .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
                 .buttonStyle(.plain)
+                .disabled(isRunning)
                 .padding(.horizontal, AESpacing.sm)
                 Button(action: runWorkspace) {
-                    Label(isRunning ? "Running" : "Run checks", systemImage: isRunning ? "hourglass" : "play.fill")
-                        .font(.system(size: 10, weight: .bold, design: .monospaced))
-                        .foregroundStyle(Color.black.opacity(0.8))
-                        .padding(.horizontal, AESpacing.md)
-                        .padding(.vertical, 8)
-                        .background(accent, in: Capsule())
+                    HStack(spacing: 7) {
+                        if isRunning {
+                            ProgressView().controlSize(.mini).tint(Color.black.opacity(0.8))
+                        } else {
+                            Image(systemName: "play.fill")
+                        }
+                        Text(isRunning ? "Running" : "Run checks")
+                    }
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    .foregroundStyle(Color.black.opacity(0.8))
+                    .padding(.horizontal, AESpacing.md)
+                    .padding(.vertical, 8)
+                    .background(accent, in: Capsule())
                 }
                 .buttonStyle(.plain)
                 .disabled(isRunning)
                 .padding(.trailing, AESpacing.sm)
             }
-            .background(Color.white.opacity(0.035))
+            .background(AEColor.surface(colorScheme).opacity(0.88))
 
-            TextEditor(text: $editorText)
-                .font(.aeCode)
-                .foregroundStyle(Color(hex: "D0DCF4"))
-                .scrollContentBackground(.hidden)
-                .padding(AESpacing.md)
-                .frame(minHeight: 330)
-                .background(Color(hex: "060912"))
+            AESyntaxCodeEditor(
+                text: $editorText,
+                language: selectedLanguage,
+                fileName: selectedFile?.name ?? "workspace",
+                accent: accent,
+                labelAccent: textAccent,
+                minHeight: 330,
+                isRunning: isRunning
+            )
                 .onChange(of: editorText) { _, newValue in
                     guard project.starterFiles.indices.contains(selectedFileIndex) else { return }
                     editorContents[project.starterFiles[selectedFileIndex].id] = newValue
                 }
 
-            VStack(alignment: .leading, spacing: 5) {
-                Text("OUTPUT")
-                    .font(.system(size: 8, weight: .bold, design: .monospaced))
-                    .tracking(0.8)
-                    .foregroundStyle(accent)
-                ForEach(Array(consoleLines.suffix(4).enumerated()), id: \.offset) { _, line in
-                    Text("› \(line)")
-                        .font(.system(size: 10, design: .monospaced))
-                        .foregroundStyle(line.contains("✓") ? AEColor.signal : AEColor.textSecondary(.dark))
-                }
-            }
-            .padding(AESpacing.md)
-            .frame(maxWidth: .infinity, minHeight: 86, alignment: .topLeading)
-            .background(Color.black.opacity(0.24))
+            AECodeConsole(
+                lines: consoleLines,
+                accent: accent,
+                labelAccent: textAccent,
+                isRunning: isRunning
+            )
         }
         .clipShape(RoundedRectangle(cornerRadius: AERadius.medium))
-        .overlay(RoundedRectangle(cornerRadius: AERadius.medium).stroke(Color.white.opacity(0.08)))
+        .overlay(RoundedRectangle(cornerRadius: AERadius.medium).stroke(AEColor.stroke(colorScheme)))
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.2), value: isRunning)
     }
 
     private func loadSelectedFile() {
@@ -299,17 +320,18 @@ struct ProjectDetailView: View {
     }
 
     private func runWorkspace() {
-        isRunning = true
+        guard let file = selectedFile else { return }
+        let submittedText = editorText
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) { isRunning = true }
         saveCurrentFile()
-        consoleLines.append("Running local structure checks…")
+        consoleLines.append("Running local structure checks for \(file.name)…")
         Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(650))
+            if !reduceMotion { try? await Task.sleep(for: .milliseconds(650)) }
             let placeholderTokens = ["NotImplementedError", "TODO", "# Your code here", "// Your code here"]
-            let hasPlaceholder = placeholderTokens.contains { editorText.localizedCaseInsensitiveContains($0) }
-            let changedFromStarter = project.starterFiles.indices.contains(selectedFileIndex)
-                && editorText != project.starterFiles[selectedFileIndex].contents
+            let hasPlaceholder = placeholderTokens.contains { submittedText.localizedCaseInsensitiveContains($0) }
+            let changedFromStarter = submittedText != file.contents
 
-            if editorText.count > 80, changedFromStarter, !hasPlaceholder {
+            if submittedText.count > 80, changedFromStarter, !hasPlaceholder {
                 consoleLines.append("✓ You changed the guided starter")
                 consoleLines.append("✓ No unfinished placeholder remains")
                 consoleLines.append("✓ Ready for the milestone review")
@@ -319,7 +341,9 @@ struct ProjectDetailView: View {
                     consoleLines.append("Open Ask Tutor if you want the next step explained.")
                 }
             }
-            isRunning = false
+            withAnimation(reduceMotion ? nil : .spring(response: 0.34, dampingFraction: 0.84)) {
+                isRunning = false
+            }
         }
     }
 }
@@ -328,6 +352,8 @@ private struct BeginnerGuideStep: View {
     let number: String
     let title: String
     let detail: String
+
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
@@ -338,14 +364,14 @@ private struct BeginnerGuideStep: View {
                 .background(AEColor.signal, in: Circle())
             Text(title)
                 .font(.aeLabel)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             Text(detail)
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
         }
         .padding(AESpacing.sm)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white.opacity(0.035), in: RoundedRectangle(cornerRadius: AERadius.small))
+        .background(AEColor.surface(colorScheme).opacity(0.7), in: RoundedRectangle(cornerRadius: AERadius.small))
     }
 }
 
@@ -353,10 +379,12 @@ private struct ProjectHeroMetric: View {
     let value: String
     let label: String
 
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(value).font(.aeHeading).foregroundStyle(.white)
-            Text(label).font(.aeCaption).foregroundStyle(AEColor.textTertiary(.dark))
+            Text(value).font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
+            Text(label).font(.aeCaption).foregroundStyle(AEColor.textTertiary(colorScheme))
         }
     }
 }
@@ -364,20 +392,23 @@ private struct ProjectHeroMetric: View {
 private struct ProjectBriefCopy: View {
     let project: LabProject
     let accent: Color
+    let textAccent: Color
+
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: AESpacing.md) {
             Label("The assignment", systemImage: "doc.text.fill")
                 .font(.aeHeading)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             Text(project.brief)
                 .font(.aeBody)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
             AEFlowLayout(spacing: 6) {
                 ForEach(project.skills, id: \.self) { skill in
                     Text(skill)
                         .font(.aeCaption)
-                        .foregroundStyle(accent)
+                        .foregroundStyle(textAccent)
                         .padding(.horizontal, 9)
                         .padding(.vertical, 5)
                         .background(accent.opacity(0.075), in: Capsule())
@@ -393,20 +424,23 @@ private struct ProjectBriefCopy: View {
 private struct OutcomeChecklist: View {
     let project: LabProject
     let accent: Color
+    let textAccent: Color
+
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: AESpacing.md) {
             Label("You will demonstrate", systemImage: "checkmark.seal.fill")
                 .font(.aeHeading)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             ForEach(project.outcomes, id: \.self) { outcome in
                 HStack(alignment: .top, spacing: AESpacing.sm) {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(accent)
+                        .foregroundStyle(textAccent)
                         .padding(.top, 2)
                     Text(outcome)
                         .font(.aeCallout)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
             }
         }

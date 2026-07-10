@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CourseCatalogView: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
     @State private var searchText = ""
     @State private var selectedDifficulty = "All"
 
@@ -71,13 +72,13 @@ struct CourseCatalogView: View {
             Text("COURSE MATRIX")
                 .font(.system(size: 11, weight: .bold, design: .monospaced))
                 .tracking(1.4)
-                .foregroundStyle(AEColor.azure)
+                .foregroundStyle(AEColor.readableAzure(colorScheme))
             Text("Master the AI engineering stack")
                 .aeTextRole(.display)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             Text("Short theory, executable practice, and production trade-offs—organized around the systems you’ll actually ship.")
                 .aeTextRole(.body)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
                 .frame(maxWidth: 720, alignment: .leading)
 
             HStack(spacing: AESpacing.lg) {
@@ -98,11 +99,11 @@ struct CourseCatalogView: View {
                     } label: {
                         Text(difficulty)
                             .font(.aeLabel)
-                            .foregroundStyle(selectedDifficulty == difficulty ? Color.black.opacity(0.8) : AEColor.textSecondary(.dark))
+                            .foregroundStyle(selectedDifficulty == difficulty ? Color.black.opacity(0.8) : AEColor.textSecondary(colorScheme))
                             .padding(.horizontal, AESpacing.md)
                             .padding(.vertical, 9)
-                            .background(selectedDifficulty == difficulty ? AnyShapeStyle(AEGradient.signal) : AnyShapeStyle(Color.white.opacity(0.055)), in: Capsule())
-                            .overlay(Capsule().stroke(Color.white.opacity(selectedDifficulty == difficulty ? 0 : 0.08)))
+                            .background(selectedDifficulty == difficulty ? AnyShapeStyle(AEGradient.signal) : AnyShapeStyle(AEColor.subtleFill(colorScheme)), in: Capsule())
+                            .overlay(Capsule().stroke(selectedDifficulty == difficulty ? Color.clear : AEColor.stroke(colorScheme)))
                     }
                     .buttonStyle(.plain)
                 }
@@ -112,6 +113,7 @@ struct CourseCatalogView: View {
 }
 
 private struct CatalogStat: View {
+    @Environment(\.colorScheme) private var colorScheme
     let value: String
     let label: String
 
@@ -119,25 +121,27 @@ private struct CatalogStat: View {
         HStack(alignment: .firstTextBaseline, spacing: 5) {
             Text(value)
                 .font(.system(size: 20, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             Text(label)
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
         }
     }
 }
 
 private struct CourseCatalogCard: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
     let course: Course
 
     var body: some View {
         let accent = Color(hex: course.accent)
+        let textAccent = AEColor.readableAccent(course.accent, colorScheme)
         VStack(alignment: .leading, spacing: AESpacing.md) {
             HStack(alignment: .top) {
                 Image(systemName: course.icon)
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(accent)
+                    .foregroundStyle(textAccent)
                     .frame(width: 48, height: 48)
                     .background(accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 14))
                     .overlay(RoundedRectangle(cornerRadius: 14).stroke(accent.opacity(0.22)))
@@ -150,21 +154,21 @@ private struct CourseCatalogCard: View {
                         .font(.system(size: 9, weight: .bold, design: .monospaced))
                         .tracking(0.8)
                 }
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
             }
 
             VStack(alignment: .leading, spacing: AESpacing.xs) {
                 Text(course.eyebrow.uppercased())
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1)
-                    .foregroundStyle(accent)
+                    .foregroundStyle(textAccent)
                 Text(course.title)
                     .font(.aeTitle)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
                     .lineLimit(2)
                 Text(course.summary)
                     .font(.aeCallout)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -173,14 +177,14 @@ private struct CourseCatalogCard: View {
                 ForEach(course.skills.prefix(4), id: \.self) { skill in
                     Text(skill)
                         .font(.aeCaption)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                         .padding(.horizontal, 9)
                         .padding(.vertical, 5)
-                        .background(Color.white.opacity(0.055), in: Capsule())
+                        .background(AEColor.subtleFill(colorScheme), in: Capsule())
                 }
             }
 
-            Divider().overlay(Color.white.opacity(0.06))
+            Divider().overlay(AEColor.divider(colorScheme))
 
             HStack {
                 Label("\(course.lessonCount) lessons", systemImage: "rectangle.stack.fill")
@@ -188,10 +192,10 @@ private struct CourseCatalogCard: View {
                 Label("\(course.estimatedMinutes / 60)h \(course.estimatedMinutes % 60)m", systemImage: "clock.fill")
                 Spacer()
                 Image(systemName: "arrow.up.right")
-                    .foregroundStyle(accent)
+                    .foregroundStyle(textAccent)
             }
             .font(.aeCaption)
-            .foregroundStyle(AEColor.textTertiary(.dark))
+            .foregroundStyle(AEColor.textTertiary(colorScheme))
 
             if state.progress.courseProgress(course) > 0 {
                 ProgressView(value: state.progress.courseProgress(course))

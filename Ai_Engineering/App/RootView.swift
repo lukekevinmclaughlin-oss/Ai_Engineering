@@ -32,21 +32,27 @@ enum AppSection: String, CaseIterable, Identifiable {
 
 struct RootView: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selection: AppSection = .home
 
     var body: some View {
-        #if os(macOS)
-        desktopLayout
-        #else
-        mobileLayout
-        #endif
+        Group {
+            #if os(macOS)
+            desktopLayout
+            #else
+            mobileLayout
+            #endif
+        }
+        .tint(AEColor.readableSignal(colorScheme))
+        .animation(reduceMotion ? nil : AEMotion.gentle, value: state.appearance)
     }
 
     #if os(macOS)
     private var desktopLayout: some View {
         NavigationSplitView {
             ZStack {
-                AEColor.canvas(.dark)
+                AEFrontierBackground(accent: AEColor.violet, intensity: 0.30)
                     .ignoresSafeArea()
 
                 VStack(alignment: .leading, spacing: AESpacing.lg) {
@@ -76,17 +82,24 @@ struct RootView: View {
     }
 
     private var brand: some View {
-        HStack(spacing: AESpacing.sm) {
-            AELogoMark(size: 36)
+        HStack(spacing: AESpacing.xs) {
+            AELogoMark(size: 34)
             VStack(alignment: .leading, spacing: 1) {
                 Text("AI_ENGINEERING")
-                    .font(.system(size: 13, weight: .bold, design: .monospaced))
-                    .foregroundStyle(.white)
+                    .font(.system(size: 12, weight: .bold, design: .monospaced))
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
                 Text("LEARN · BUILD · SHIP")
-                    .font(.system(size: 8, weight: .semibold, design: .monospaced))
-                    .tracking(1.1)
-                    .foregroundStyle(AEColor.textTertiary(.dark))
+                    .font(.system(size: 7, weight: .semibold, design: .monospaced))
+                    .tracking(0.7)
+                    .foregroundStyle(AEColor.textTertiary(colorScheme))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
             }
+            .layoutPriority(1)
+            Spacer(minLength: AESpacing.xs)
+            AppearanceMenu(compact: true)
         }
     }
 
@@ -104,10 +117,10 @@ struct RootView: View {
                 VStack(alignment: .leading, spacing: 1) {
                     Text("AI Engineer path")
                         .font(.aeLabel)
-                        .foregroundStyle(AEColor.textPrimary(.dark))
+                        .foregroundStyle(AEColor.textPrimary(colorScheme))
                     Text("Level \(state.progress.totalXP / 500 + 1)")
                         .font(.aeCaption)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
                 Spacer()
                 Image(systemName: "flame.fill")
@@ -116,14 +129,25 @@ struct RootView: View {
                     .font(.aeLabel)
             }
 
+            AIConstructionMiniatureView(snapshot: assemblySnapshot)
+
             ProgressView(value: state.progress.dailyProgress)
                 .tint(AEColor.signal)
             Text("\(state.progress.todayXP) / \(state.progress.dailyGoal) XP today")
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
         }
         .padding(AESpacing.md)
         .aeGlassSurface(cornerRadius: AERadius.medium, tint: AEColor.signal)
+    }
+
+    private var assemblySnapshot: AIAssemblyProgress {
+        AIAssemblyProgress(
+            courses: state.curriculum.courses,
+            projects: state.projects,
+            completedLessonIDs: state.progress.value.completedLessonIDs,
+            completedMilestoneIDs: state.progress.value.completedMilestoneIDs
+        )
     }
     #endif
 
@@ -131,7 +155,14 @@ struct RootView: View {
     private var mobileLayout: some View {
         TabView(selection: $selection) {
             ForEach(AppSection.allCases) { section in
-                sectionView(section)
+                NavigationStack {
+                    sectionContent(section)
+                        .toolbar {
+                            ToolbarItem(placement: .primaryAction) {
+                                AppearanceMenu(compact: true)
+                            }
+                        }
+                }
                     .tabItem { Label(section.title, systemImage: section.systemImage) }
                     .tag(section)
             }
@@ -143,22 +174,74 @@ struct RootView: View {
 
     @ViewBuilder
     private func sectionView(_ section: AppSection) -> some View {
+        NavigationStack {
+            sectionContent(section)
+        }
+    }
+
+    @ViewBuilder
+    private func sectionContent(_ section: AppSection) -> some View {
         switch section {
         case .home:
-            NavigationStack { DashboardView(selection: $selection) }
+            DashboardView(selection: $selection)
         case .learn:
-            NavigationStack { CourseCatalogView() }
+            CourseCatalogView()
         case .tutor:
-            NavigationStack { TutorView() }
+            TutorView()
         case .projects:
-            NavigationStack { ProjectCatalogView() }
+            ProjectCatalogView()
         case .progress:
-            NavigationStack { ProgressProfileView() }
+            ProgressProfileView()
         }
     }
 }
 
+struct AppearanceMenu: View {
+    @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
+
+    var compact = false
+
+    var body: some View {
+        Menu {
+            ForEach(AppAppearance.allCases) { appearance in
+                Button {
+                    state.appearance = appearance
+                } label: {
+                    Label(
+                        appearance.title,
+                        systemImage: state.appearance == appearance
+                            ? "checkmark.circle.fill"
+                            : appearance.systemImage
+                    )
+                }
+            }
+        } label: {
+            Group {
+                if compact {
+                    Image(systemName: state.appearance.systemImage)
+                } else {
+                    Label("Appearance", systemImage: state.appearance.systemImage)
+                }
+            }
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
+                .frame(minWidth: 32, minHeight: 32)
+                .background(AEColor.surfaceElevated(colorScheme).opacity(0.92), in: Circle())
+                .overlay(Circle().stroke(AEColor.strokeStrong(colorScheme)))
+        }
+        .menuIndicator(.hidden)
+        #if os(macOS)
+        .menuStyle(.borderlessButton)
+        #endif
+        .help("Appearance: \(state.appearance.title)")
+        .accessibilityLabel("Appearance")
+        .accessibilityValue(state.appearance.title)
+    }
+}
+
 struct AELogoMark: View {
+    @Environment(\.colorScheme) private var colorScheme
     let size: CGFloat
 
     var body: some View {
@@ -169,7 +252,7 @@ struct AELogoMark: View {
             .clipShape(RoundedRectangle(cornerRadius: size * 0.24, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: size * 0.24, style: .continuous)
-                    .stroke(Color.white.opacity(0.14), lineWidth: max(size * 0.025, 1))
+                    .stroke(AEColor.strokeStrong(colorScheme), lineWidth: max(size * 0.025, 1))
             }
             .frame(width: size, height: size)
             .aeGlow(color: AEColor.violet, radius: size * 0.4, intensity: 0.8)

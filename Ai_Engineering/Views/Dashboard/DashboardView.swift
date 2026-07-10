@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DashboardView: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
     @Binding var selection: AppSection
 
     private let columns = [GridItem(.adaptive(minimum: 210), spacing: AESpacing.md)]
@@ -13,6 +14,8 @@ struct DashboardView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: AESpacing.xl) {
                     dashboardHeader
+
+                    AIConstructionProgressView(snapshot: assemblySnapshot, presentation: .dashboard)
 
                     if let featured = state.featuredCourse {
                         FeaturedLearningCard(course: featured)
@@ -40,7 +43,7 @@ struct DashboardView: View {
         }
         .navigationTitle("")
         #if os(iOS)
-        .toolbar(.hidden, for: .navigationBar)
+        .navigationBarTitleDisplayMode(.inline)
         #endif
     }
 
@@ -71,13 +74,13 @@ struct DashboardView: View {
             Text("LEARNING TERMINAL / 01")
                 .font(.system(size: 11, weight: .semibold, design: .monospaced))
                 .tracking(1.35)
-                .foregroundStyle(AEColor.signal)
+                .foregroundStyle(AEColor.readableSignal(colorScheme))
             Text("Build what comes next.")
                 .aeTextRole(.display)
-                .foregroundStyle(AEColor.textPrimary(.dark))
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             Text("Production-grade AI engineering, one focused session at a time.")
                 .aeTextRole(.body)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
         }
     }
 
@@ -155,9 +158,20 @@ struct DashboardView: View {
             }
         }
     }
+
+    private var assemblySnapshot: AIAssemblyProgress {
+        AIAssemblyProgress(
+            courses: state.curriculum.courses,
+            projects: state.projects,
+            completedLessonIDs: state.progress.value.completedLessonIDs,
+            completedMilestoneIDs: state.progress.value.completedMilestoneIDs
+        )
+    }
 }
 
 private struct HeaderMetric: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let icon: String
     let value: String
     let label: String
@@ -170,10 +184,10 @@ private struct HeaderMetric: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(value)
                     .font(.system(size: 15, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
                 Text(label)
                     .font(.aeCaption)
-                    .foregroundStyle(AEColor.textTertiary(.dark))
+                    .foregroundStyle(AEColor.textTertiary(colorScheme))
             }
         }
         .padding(.horizontal, AESpacing.sm)
@@ -184,6 +198,7 @@ private struct HeaderMetric: View {
 
 private struct FeaturedLearningCard: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
     let course: Course
 
     var body: some View {
@@ -210,7 +225,7 @@ private struct FeaturedLearningCard: View {
             RoundedRectangle(cornerRadius: 28, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [Color(hex: "10182B"), Color(hex: "0A1020")],
+                        colors: [AEColor.surfaceElevated(colorScheme), AEColor.canvasRaised(colorScheme)],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -226,7 +241,7 @@ private struct FeaturedLearningCard: View {
         .overlay {
             RoundedRectangle(cornerRadius: 28, style: .continuous)
                 .stroke(
-                    LinearGradient(colors: [accent.opacity(0.55), .white.opacity(0.06)], startPoint: .topLeading, endPoint: .bottomTrailing),
+                    LinearGradient(colors: [accent.opacity(0.55), AEColor.stroke(colorScheme)], startPoint: .topLeading, endPoint: .bottomTrailing),
                     lineWidth: 1
                 )
         }
@@ -234,34 +249,35 @@ private struct FeaturedLearningCard: View {
     }
 
     private func heroCopy(accent: Color) -> some View {
-        VStack(alignment: .leading, spacing: AESpacing.md) {
+        let displayAccent = AEColor.readableAccent(course.accent, colorScheme)
+        return VStack(alignment: .leading, spacing: AESpacing.md) {
             HStack(spacing: AESpacing.xs) {
                 Circle().fill(accent).frame(width: 7, height: 7).aeGlow(color: accent, radius: 8)
                 Text(state.progress.courseProgress(course) > 0 ? "CONTINUE LEARNING" : "START YOUR CORE PATH")
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
                     .tracking(1.25)
-                    .foregroundStyle(accent)
+                    .foregroundStyle(displayAccent)
             }
 
             Text(course.title)
                 .font(heroTitleFont)
                 .tracking(-0.8)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
                 .fixedSize(horizontal: false, vertical: true)
 
             Text(course.summary)
                 .aeTextRole(.body)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
                 .frame(maxWidth: 590, alignment: .leading)
 
             AEFlowLayout(spacing: AESpacing.xs) {
                 ForEach(course.skills.prefix(4), id: \.self) { skill in
                     Text(skill)
                         .font(.aeCaption)
-                        .foregroundStyle(.white.opacity(0.82))
+                        .foregroundStyle(AEColor.textPrimary(colorScheme).opacity(0.82))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(Color.white.opacity(0.07), in: Capsule())
+                        .background(AEColor.textPrimary(colorScheme).opacity(0.07), in: Capsule())
                 }
             }
 
@@ -280,7 +296,7 @@ private struct FeaturedLearningCard: View {
 
                 Text("\(course.lessonCount) lessons · \(course.estimatedMinutes / 60)h")
                     .font(.aeCallout)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
             }
         }
     }
@@ -303,10 +319,18 @@ private struct FeaturedLearningCard: View {
 }
 
 private struct NeuralOrbitView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     let accent: Color
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+        TimelineView(
+            .animation(
+                minimumInterval: ProcessInfo.processInfo.isLowPowerModeEnabled ? 0.25 : 1.0 / 15.0,
+                paused: reduceMotion
+            )
+        ) { timeline in
             Canvas { context, size in
                 let phase = timeline.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 10) / 10
                 let center = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -341,7 +365,9 @@ private struct NeuralOrbitView: View {
                     endRadius: 48
                 ))
 
-                let mark = Text("AI").font(.system(size: 24, weight: .black, design: .rounded)).foregroundStyle(.white)
+                let mark = Text("AI")
+                    .font(.system(size: 24, weight: .black, design: .rounded))
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
                 context.draw(mark, at: center)
             }
         }
@@ -353,6 +379,8 @@ private struct NeuralOrbitView: View {
 }
 
 private struct DashboardMetric: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let icon: String
     let title: String
     let value: String
@@ -371,19 +399,19 @@ private struct DashboardMetric: View {
                 Text(title.uppercased())
                     .font(.system(size: 9, weight: .bold, design: .monospaced))
                     .tracking(0.8)
-                    .foregroundStyle(AEColor.textTertiary(.dark))
+                    .foregroundStyle(AEColor.textTertiary(colorScheme))
             }
 
             Text(value)
                 .font(.aeMetric)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             Text(caption)
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
 
             GeometryReader { proxy in
                 ZStack(alignment: .leading) {
-                    Capsule().fill(Color.white.opacity(0.07))
+                    Capsule().fill(AEColor.stroke(colorScheme))
                     Capsule()
                         .fill(LinearGradient(colors: [color, color.opacity(0.55)], startPoint: .leading, endPoint: .trailing))
                         .frame(width: proxy.size.width * min(max(progress, 0.025), 1))
@@ -398,6 +426,8 @@ private struct DashboardMetric: View {
 }
 
 private struct SectionHeading: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let eyebrow: String
     let title: String
     let detail: String
@@ -410,33 +440,36 @@ private struct SectionHeading: View {
                 Text(eyebrow)
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1)
-                    .foregroundStyle(AEColor.signal)
+                    .foregroundStyle(AEColor.readableSignal(colorScheme))
                 HStack(alignment: .firstTextBaseline, spacing: AESpacing.sm) {
-                    Text(title).font(.aeTitle).foregroundStyle(.white)
-                    Text(detail).font(.aeCallout).foregroundStyle(AEColor.textTertiary(.dark))
+                    Text(title).font(.aeTitle).foregroundStyle(AEColor.textPrimary(colorScheme))
+                    Text(detail).font(.aeCallout).foregroundStyle(AEColor.textTertiary(colorScheme))
                 }
             }
             Spacer()
             Button(action, action: actionHandler)
                 .font(.aeLabel)
                 .buttonStyle(.plain)
-                .foregroundStyle(AEColor.signal)
+                .foregroundStyle(AEColor.readableSignal(colorScheme))
         }
     }
 }
 
 private struct PathCourseCard: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let course: Course
     let index: Int
     let progress: Double
 
     var body: some View {
         let accent = Color(hex: course.accent)
+        let displayAccent = AEColor.readableAccent(course.accent, colorScheme)
         VStack(alignment: .leading, spacing: AESpacing.md) {
             HStack {
                 Text(String(format: "%02d", index))
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
-                    .foregroundStyle(accent)
+                    .foregroundStyle(displayAccent)
                 Spacer()
                 Image(systemName: course.icon)
                     .foregroundStyle(accent)
@@ -446,14 +479,14 @@ private struct PathCourseCard: View {
             Text(course.eyebrow.uppercased())
                 .font(.system(size: 9, weight: .bold, design: .monospaced))
                 .tracking(0.8)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
             Text(course.title)
                 .font(.aeHeading)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
                 .lineLimit(2)
             Text("\(course.lessonCount) lessons · \(course.difficulty)")
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
             ProgressView(value: progress)
                 .tint(accent)
         }
@@ -465,16 +498,17 @@ private struct PathCourseCard: View {
 
 private struct WeeklyMomentumCard: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: AESpacing.md) {
             Text("WEEKLY MOMENTUM")
                 .font(.system(size: 10, weight: .bold, design: .monospaced))
                 .tracking(1)
-                .foregroundStyle(AEColor.signal)
+                .foregroundStyle(AEColor.readableSignal(colorScheme))
             Text("Consistency compounds.")
                 .font(.aeHeading)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             HStack(alignment: .bottom, spacing: 9) {
                 ForEach(Array(state.progress.activityForLastSevenDays().enumerated()), id: \.offset) { index, xp in
                     VStack(spacing: 6) {
@@ -483,7 +517,7 @@ private struct WeeklyMomentumCard: View {
                             .frame(height: max(CGFloat(xp) / 2.5, 8))
                         Text(shortWeekday(offset: index - 6))
                             .font(.system(size: 9, weight: .semibold, design: .monospaced))
-                            .foregroundStyle(AEColor.textTertiary(.dark))
+                            .foregroundStyle(AEColor.textTertiary(colorScheme))
                     }
                     .frame(maxWidth: 34)
                 }
@@ -503,25 +537,26 @@ private struct WeeklyMomentumCard: View {
 
 private struct SkillSnapshotCard: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: AESpacing.md) {
             Text("SKILL SIGNAL")
                 .font(.system(size: 10, weight: .bold, design: .monospaced))
                 .tracking(1)
-                .foregroundStyle(AEColor.violet)
+                .foregroundStyle(AEColor.readableViolet(colorScheme))
             Text("Production readiness")
                 .font(.aeHeading)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
 
             ForEach(state.skillMetrics.prefix(4)) { skill in
                 VStack(spacing: 6) {
                     HStack {
-                        Text(skill.name).font(.aeCaption).foregroundStyle(AEColor.textSecondary(.dark))
+                        Text(skill.name).font(.aeCaption).foregroundStyle(AEColor.textSecondary(colorScheme))
                         Spacer()
                         Text("\(Int(skill.value * 100))%")
                             .font(.system(size: 10, weight: .bold, design: .monospaced))
-                            .foregroundStyle(Color(hex: skill.color))
+                            .foregroundStyle(AEColor.readableAccent(skill.color, colorScheme))
                     }
                     ProgressView(value: skill.value)
                         .tint(Color(hex: skill.color))

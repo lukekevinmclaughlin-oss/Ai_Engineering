@@ -54,6 +54,7 @@ private struct ScopedTutorWorkspace: View {
 
 private struct TutorWorkspace: View {
     @ObservedObject var tutor: TutorCoordinator
+    @Environment(\.colorScheme) private var colorScheme
     @State private var draft = ""
     @State private var showSettings = false
     @FocusState private var composerFocused: Bool
@@ -67,13 +68,13 @@ private struct TutorWorkspace: View {
                     HStack(spacing: 0) {
                         tutorRail
                             .frame(width: min(310, proxy.size.width * 0.29))
-                        Divider().overlay(Color.white.opacity(0.075))
+                        Divider().overlay(AEColor.divider(colorScheme))
                         chatPane
                     }
                 } else {
                     VStack(spacing: 0) {
                         compactHeader
-                        Divider().overlay(Color.white.opacity(0.075))
+                        Divider().overlay(AEColor.divider(colorScheme))
                         chatPane
                     }
                 }
@@ -81,7 +82,7 @@ private struct TutorWorkspace: View {
         }
         .navigationTitle("Tutor")
         #if os(iOS)
-        .toolbar(.hidden, for: .navigationBar)
+        .navigationBarTitleDisplayMode(.inline)
         #endif
         .sheet(isPresented: $showSettings) {
             TutorSettingsView(tutor: tutor)
@@ -97,10 +98,10 @@ private struct TutorWorkspace: View {
                         Text("TUTOR CORE")
                             .font(.system(size: 11, weight: .bold, design: .monospaced))
                             .tracking(1.2)
-                            .foregroundStyle(AEColor.violet)
+                            .foregroundStyle(AEColor.readableViolet(colorScheme))
                         Text("Principal AI engineer")
                             .font(.aeCaption)
-                            .foregroundStyle(AEColor.textSecondary(.dark))
+                            .foregroundStyle(AEColor.textSecondary(colorScheme))
                     }
                 }
 
@@ -119,7 +120,7 @@ private struct TutorWorkspace: View {
             }
             .padding(AESpacing.lg)
         }
-        .background(Color.black.opacity(0.10))
+        .background(AEColor.railFill(colorScheme))
     }
 
     private var compactHeader: some View {
@@ -129,25 +130,25 @@ private struct TutorWorkspace: View {
                 Text("TUTOR CORE")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1)
-                    .foregroundStyle(AEColor.violet)
+                    .foregroundStyle(AEColor.readableViolet(colorScheme))
                 HStack(spacing: 5) {
                     Circle()
                         .fill(tutor.usesNetwork ? AEColor.amber : AEColor.signal)
                         .frame(width: 6, height: 6)
                     Text(tutor.activeEngineName)
                         .font(.aeCaption)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
             }
             Spacer()
             if !tutor.context.isGeneral {
                 Text(tutor.context.displayTitle)
                     .font(.aeCaption)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
                     .lineLimit(1)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(Color.white.opacity(0.05), in: Capsule())
+                    .background(AEColor.subtleFill(colorScheme), in: Capsule())
             }
             if !tutor.context.isGeneral {
                 Button { showSettings = true } label: {
@@ -168,22 +169,22 @@ private struct TutorWorkspace: View {
                 Label("CURRENT CONTEXT", systemImage: "scope")
                     .font(.system(size: 9, weight: .bold, design: .monospaced))
                     .tracking(0.9)
-                    .foregroundStyle(AEColor.azure)
+                    .foregroundStyle(AEColor.readableAzure(colorScheme))
                 Spacer()
                 if !tutor.context.isGeneral {
                     Button("Clear") { tutor.clearContext() }
                         .buttonStyle(.plain)
                         .font(.aeCaption)
-                        .foregroundStyle(AEColor.textTertiary(.dark))
+                        .foregroundStyle(AEColor.textTertiary(colorScheme))
                 }
             }
             Text(tutor.context.displayTitle)
                 .font(.aeHeading)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
                 .fixedSize(horizontal: false, vertical: true)
             Text(tutor.context.subtitle)
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
         }
         .padding(AESpacing.md)
         .aeGlassSurface(cornerRadius: AERadius.medium, tint: AEColor.azure)
@@ -196,7 +197,7 @@ private struct TutorWorkspace: View {
                     .foregroundStyle(tutor.usesNetwork ? AEColor.amber : AEColor.signal)
                 Text(tutor.activeEngineName)
                     .font(.aeHeading)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
                 Spacer()
                 Circle()
                     .fill(tutor.usesNetwork ? AEColor.amber : AEColor.signal)
@@ -205,15 +206,15 @@ private struct TutorWorkspace: View {
             }
             Text(tutor.activeEngineDetail)
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
             Button("Engine settings") { showSettings = true }
                 .buttonStyle(.plain)
                 .font(.aeLabel)
-                .foregroundStyle(AEColor.signal)
+                .foregroundStyle(AEColor.readableSignal(colorScheme))
         }
         .padding(AESpacing.md)
-        .background(Color.white.opacity(0.035), in: RoundedRectangle(cornerRadius: AERadius.medium))
-        .overlay(RoundedRectangle(cornerRadius: AERadius.medium).stroke(Color.white.opacity(0.075)))
+        .background(AEColor.subtleFill(colorScheme), in: RoundedRectangle(cornerRadius: AERadius.medium))
+        .overlay(RoundedRectangle(cornerRadius: AERadius.medium).stroke(AEColor.stroke(colorScheme)))
     }
 
     private var teachingControls: some View {
@@ -221,7 +222,7 @@ private struct TutorWorkspace: View {
             Text("TEACHING MODE")
                 .font(.system(size: 9, weight: .bold, design: .monospaced))
                 .tracking(0.9)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
 
             Picker("Starting knowledge", selection: Binding(
                 get: { tutor.preferences.learnerLevel },
@@ -245,14 +246,14 @@ private struct TutorWorkspace: View {
         VStack(alignment: .leading, spacing: AESpacing.sm) {
             HStack {
                 Image(systemName: "link.badge.plus")
-                    .foregroundStyle(AEColor.violet)
+                    .foregroundStyle(AEColor.readableViolet(colorScheme))
                 Text("Your favourite LLM")
                     .font(.aeLabel)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
             }
             Text("Optional. Offline tutoring remains available with no subscription.")
                 .font(.aeCaption)
-                .foregroundStyle(AEColor.textSecondary(.dark))
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
             Button(tutor.providerIsReady ? "Review connection" : "Connect a provider") {
                 showSettings = true
             }
@@ -280,10 +281,10 @@ private struct TutorWorkspace: View {
                 Text("ASK, BUILD, UNDERSTAND")
                     .font(.system(size: 9, weight: .bold, design: .monospaced))
                     .tracking(1.1)
-                    .foregroundStyle(AEColor.violet)
+                    .foregroundStyle(AEColor.readableViolet(colorScheme))
                 Text("No question is too basic")
                     .font(.aeTitle)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
             }
             Spacer()
             Button { tutor.clearConversation() } label: {
@@ -352,7 +353,7 @@ private struct TutorWorkspace: View {
             .padding(.horizontal, AESpacing.lg)
             .padding(.vertical, AESpacing.sm)
         }
-        .background(Color.black.opacity(0.08))
+        .background(AEColor.railFill(colorScheme).opacity(0.72))
     }
 
     private var composer: some View {
@@ -360,13 +361,13 @@ private struct TutorWorkspace: View {
             TextField("Ask anything about AI engineering…", text: $draft, axis: .vertical)
                 .textFieldStyle(.plain)
                 .font(.aeBody)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
                 .lineLimit(1...6)
                 .focused($composerFocused)
                 .padding(.horizontal, AESpacing.md)
                 .padding(.vertical, 13)
-                .background(Color.black.opacity(0.24), in: RoundedRectangle(cornerRadius: 17))
-                .overlay(RoundedRectangle(cornerRadius: 17).stroke(Color.white.opacity(0.11)))
+                .background(AEColor.inputFill(colorScheme), in: RoundedRectangle(cornerRadius: 17))
+                .overlay(RoundedRectangle(cornerRadius: 17).stroke(AEColor.strokeStrong(colorScheme)))
                 .onSubmit(send)
 
             Button(action: send) {
@@ -390,6 +391,7 @@ private struct TutorWorkspace: View {
 }
 
 private struct TutorMessageBubble: View {
+    @Environment(\.colorScheme) private var colorScheme
     let message: TutorMessage
 
     private var isUser: Bool { message.role == .user }
@@ -406,7 +408,7 @@ private struct TutorMessageBubble: View {
             VStack(alignment: isUser ? .trailing : .leading, spacing: AESpacing.sm) {
                 TutorMarkdownText(
                     content: message.content,
-                    foreground: isUser ? Color.black.opacity(0.80) : AEColor.textPrimary(.dark)
+                    foreground: isUser ? Color.black.opacity(0.80) : AEColor.textPrimary(colorScheme)
                 )
 
                 if !message.sources.isEmpty {
@@ -414,13 +416,13 @@ private struct TutorMessageBubble: View {
                         Text("RETRIEVED CONTEXT")
                             .font(.system(size: 8, weight: .bold, design: .monospaced))
                             .tracking(0.8)
-                            .foregroundStyle(AEColor.textTertiary(.dark))
+                            .foregroundStyle(AEColor.textTertiary(colorScheme))
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: AESpacing.xs) {
                                 ForEach(message.sources) { source in
                                     Label(source.title, systemImage: source.location.contains("Portfolio") ? "hammer.fill" : "book.closed.fill")
                                         .font(.system(size: 10, weight: .semibold, design: .rounded))
-                                        .foregroundStyle(AEColor.azure)
+                                        .foregroundStyle(AEColor.readableAzure(colorScheme))
                                         .padding(.horizontal, 9)
                                         .padding(.vertical, 6)
                                         .background(AEColor.azure.opacity(0.08), in: Capsule())
@@ -434,18 +436,18 @@ private struct TutorMessageBubble: View {
                 if let engine = message.engineName, !isUser {
                     Label(engine, systemImage: engine.contains("Apple") ? "apple.intelligence" : "internaldrive.fill")
                         .font(.system(size: 9, weight: .bold, design: .monospaced))
-                        .foregroundStyle(AEColor.textTertiary(.dark))
+                        .foregroundStyle(AEColor.textTertiary(colorScheme))
                 }
             }
             .padding(AESpacing.md)
             .frame(maxWidth: isUser ? 620 : 760, alignment: .leading)
             .background {
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(isUser ? AnyShapeStyle(AEGradient.signal) : AnyShapeStyle(Color.white.opacity(0.052)))
+                    .fill(isUser ? AnyShapeStyle(AEGradient.signal) : AnyShapeStyle(AEColor.subtleFill(colorScheme)))
             }
             .overlay {
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .stroke(isUser ? Color.white.opacity(0.18) : AEColor.violet.opacity(0.18))
+                    .stroke(isUser ? Color.white.opacity(0.18) : AEColor.violet.opacity(colorScheme == .dark ? 0.18 : 0.28))
             }
 
             if !isUser { Spacer(minLength: 28) }
@@ -485,6 +487,7 @@ private struct TutorMarkdownText: View {
 }
 
 private struct TutorThinkingBubble: View {
+    @Environment(\.colorScheme) private var colorScheme
     let engine: String
 
     var body: some View {
@@ -496,10 +499,10 @@ private struct TutorThinkingBubble: View {
                     .tint(AEColor.signal)
                 Text("\(engine) is building the explanation…")
                     .font(.aeCallout)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
             }
             .padding(AESpacing.md)
-            .background(Color.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 18))
+            .background(AEColor.subtleFill(colorScheme), in: RoundedRectangle(cornerRadius: 18))
             Spacer()
         }
     }

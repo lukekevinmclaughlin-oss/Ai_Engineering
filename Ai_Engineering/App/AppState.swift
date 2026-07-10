@@ -1,23 +1,71 @@
 import Combine
 import Foundation
+import SwiftUI
+
+enum AppAppearance: String, CaseIterable, Identifiable, Sendable {
+    case system
+    case light
+    case dark
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .system: "System"
+        case .light: "Light"
+        case .dark: "Dark"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .system: "circle.lefthalf.filled"
+        case .light: "sun.max.fill"
+        case .dark: "moon.stars.fill"
+        }
+    }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
+        }
+    }
+}
 
 @MainActor
 final class AppState: ObservableObject {
+    static let appearanceDefaultsKey = "app.appearance"
+
     let curriculum: Curriculum
     let projects: [LabProject]
     let progress: ProgressStore
     let tutor: TutorCoordinator
+    @Published var appearance: AppAppearance {
+        didSet {
+            userDefaults.set(appearance.rawValue, forKey: Self.appearanceDefaultsKey)
+        }
+    }
+
+    private let userDefaults: UserDefaults
     private var cancellables: Set<AnyCancellable> = []
 
     init(
         curriculum: Curriculum = CurriculumStore.load(),
         projects: [LabProject] = ProjectCatalog.all,
-        progress: ProgressStore = ProgressStore()
+        progress: ProgressStore = ProgressStore(),
+        userDefaults: UserDefaults = .standard
     ) {
+        self.userDefaults = userDefaults
+        self.appearance = AppAppearance(
+            rawValue: userDefaults.string(forKey: Self.appearanceDefaultsKey) ?? ""
+        ) ?? .system
         self.curriculum = curriculum
         self.projects = projects
         self.progress = progress
-        self.tutor = TutorCoordinator(curriculum: curriculum, projects: projects)
+        self.progress.migrateLegacyMilestoneIDs(projects: projects)
+        self.tutor = TutorCoordinator(curriculum: curriculum, projects: projects, defaults: userDefaults)
 
         progress.objectWillChange
             .sink { [weak self] in self?.objectWillChange.send() }

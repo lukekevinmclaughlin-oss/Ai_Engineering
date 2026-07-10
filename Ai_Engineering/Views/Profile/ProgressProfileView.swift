@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProgressProfileView: View {
     @EnvironmentObject private var state: AppState
+    @Environment(\.colorScheme) private var colorScheme
     @State private var showResetConfirmation = false
     @State private var showTutorSettings = false
 
@@ -12,6 +13,7 @@ struct ProgressProfileView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: AESpacing.xl) {
                     profileHero
+                    AIConstructionProgressView(snapshot: assemblySnapshot, presentation: .profile)
                     achievementGrid
 
                     ViewThatFits(in: .horizontal) {
@@ -27,7 +29,7 @@ struct ProgressProfileView: View {
 
                     learningSettings
                 }
-                .padding(.horizontal, 28)
+                .padding(.horizontal, responsivePadding)
                 .padding(.vertical, AESpacing.lg)
                 .frame(maxWidth: 1_160)
                 .frame(maxWidth: .infinity)
@@ -75,7 +77,7 @@ struct ProgressProfileView: View {
                     .frame(width: 92, height: 92)
                     .aeGlow(color: AEColor.signal, radius: 22, intensity: 0.8)
                 Circle()
-                    .fill(Color.white.opacity(0.055))
+                    .fill(AEColor.textPrimary(colorScheme).opacity(0.055))
                     .frame(width: 78, height: 78)
                 Text("AI")
                     .font(.system(size: 24, weight: .black, design: .rounded))
@@ -86,13 +88,13 @@ struct ProgressProfileView: View {
                 Text("ENGINEER PROFILE")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1.2)
-                    .foregroundStyle(AEColor.signal)
+                    .foregroundStyle(AEColor.readableSignal(colorScheme))
                 Text("Your learning signal")
                     .aeTextRole(.display)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
                 Text("Level \(currentLevel) · \(xpToNextLevel) XP to the next level")
                     .font(.aeCallout)
-                    .foregroundStyle(AEColor.textSecondary(.dark))
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
                 ProgressView(value: levelProgress)
                     .tint(AEColor.signal)
                     .frame(maxWidth: 380)
@@ -104,11 +106,11 @@ struct ProgressProfileView: View {
         VStack(alignment: .leading, spacing: 2) {
             Text("\(state.progress.totalXP)")
                 .aeTextRole(.hero)
-                .foregroundStyle(.white)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
             Text("TOTAL XP")
                 .font(.system(size: 9, weight: .bold, design: .monospaced))
                 .tracking(1)
-                .foregroundStyle(AEColor.textTertiary(.dark))
+                .foregroundStyle(AEColor.textTertiary(colorScheme))
         }
     }
 
@@ -127,10 +129,10 @@ struct ProgressProfileView: View {
                 Text("SKILL MATRIX")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1)
-                    .foregroundStyle(AEColor.azure)
+                    .foregroundStyle(AEColor.readableAzure(colorScheme))
                 Text("Production capabilities")
                     .font(.aeTitle)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
             }
 
             ForEach(state.skillMetrics) { metric in
@@ -148,10 +150,10 @@ struct ProgressProfileView: View {
                 Text("ROLE READINESS")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1)
-                    .foregroundStyle(AEColor.violet)
+                    .foregroundStyle(AEColor.readableViolet(colorScheme))
                 Text("AI Engineer path")
                     .font(.aeTitle)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
             }
 
             ReadinessStage(index: 1, title: "Foundation", detail: "Python, APIs, model mechanics", progress: foundationProgress, color: AEColor.signal)
@@ -170,18 +172,18 @@ struct ProgressProfileView: View {
                 Text("LEARNING SYSTEM")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1)
-                    .foregroundStyle(AEColor.signal)
+                    .foregroundStyle(AEColor.readableSignal(colorScheme))
                 Text("Tune your practice")
                     .font(.aeTitle)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(AEColor.textPrimary(colorScheme))
             }
 
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Daily XP target").font(.aeHeading).foregroundStyle(.white)
+                    Text("Daily XP target").font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
                     Text("Choose a pace you can sustain every week.")
                         .font(.aeCallout)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
                 Spacer()
                 Picker("Daily XP target", selection: Binding(
@@ -197,43 +199,43 @@ struct ProgressProfileView: View {
                 .frame(maxWidth: 150)
             }
 
-            Divider().overlay(Color.white.opacity(0.06))
+            Divider().overlay(AEColor.stroke(colorScheme))
 
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Tutor Core").font(.aeHeading).foregroundStyle(.white)
+                    Text("Tutor Core").font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
                     Text("Offline by default · \(state.tutor.activeEngineName)")
                         .font(.aeCallout)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
                 Spacer()
                 Button("Tutor settings") { showTutorSettings = true }
                     .buttonStyle(AEButtonStyle(.outline, size: .compact, tint: AEColor.violet))
             }
 
-            Divider().overlay(Color.white.opacity(0.06))
+            Divider().overlay(AEColor.stroke(colorScheme))
 
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Offline-first progress").font(.aeHeading).foregroundStyle(.white)
+                    Text("Offline-first progress").font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
                     Text("Your lesson state is stored locally on this device.")
                         .font(.aeCallout)
-                        .foregroundStyle(AEColor.textSecondary(.dark))
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
                 Spacer()
                 Label("ACTIVE", systemImage: "checkmark.shield.fill")
                     .font(.system(size: 9, weight: .bold, design: .monospaced))
-                    .foregroundStyle(AEColor.signal)
+                    .foregroundStyle(AEColor.readableSignal(colorScheme))
             }
 
-            Divider().overlay(Color.white.opacity(0.06))
+            Divider().overlay(AEColor.stroke(colorScheme))
 
             Button(role: .destructive) { showResetConfirmation = true } label: {
                 Label("Reset learning progress", systemImage: "arrow.counterclockwise")
             }
             .buttonStyle(.plain)
             .font(.aeLabel)
-            .foregroundStyle(AEColor.coral)
+            .foregroundStyle(AEColor.readableCoral(colorScheme))
         }
         .padding(AESpacing.lg)
         .aeGlassSurface(tint: AEColor.signal)
@@ -242,7 +244,7 @@ struct ProgressProfileView: View {
     private var currentLevel: Int { state.progress.totalXP / 500 + 1 }
     private var levelProgress: Double { Double(state.progress.totalXP % 500) / 500 }
     private var xpToNextLevel: Int { 500 - (state.progress.totalXP % 500) }
-    private var completedMilestones: Int { state.progress.value.completedMilestoneIDs.count }
+    private var completedMilestones: Int { assemblySnapshot.completedMilestones }
 
     private func courseProgress(at index: Int) -> Double {
         guard state.curriculum.courses.indices.contains(index) else { return 0 }
@@ -253,11 +255,37 @@ struct ProgressProfileView: View {
     private var appliedProgress: Double { courseProgress(at: 0) }
     private var productionProgress: Double { max(courseProgress(at: 0) * 0.82, courseProgress(at: 2)) }
     private var portfolioProgress: Double {
-        Double(completedMilestones) / Double(max(state.projects.prefix(2).flatMap(\.milestones).count, 1))
+        let portfolioProjects = Array(state.projects.prefix(2))
+        let milestoneKeys = Set(portfolioProjects.flatMap { project in
+            project.milestones.map { milestone in
+                AIAssemblyProgress.milestoneKey(projectID: project.id, milestoneID: milestone.id)
+            }
+        })
+        let completed = state.progress.value.completedMilestoneIDs.intersection(milestoneKeys).count
+        return Double(completed) / Double(max(milestoneKeys.count, 1))
+    }
+
+    private var assemblySnapshot: AIAssemblyProgress {
+        AIAssemblyProgress(
+            courses: state.curriculum.courses,
+            projects: state.projects,
+            completedLessonIDs: state.progress.value.completedLessonIDs,
+            completedMilestoneIDs: state.progress.value.completedMilestoneIDs
+        )
+    }
+
+    private var responsivePadding: CGFloat {
+        #if os(macOS)
+        28
+        #else
+        20
+        #endif
     }
 }
 
 private struct ProfileMetric: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let icon: String
     let value: String
     let label: String
@@ -271,8 +299,8 @@ private struct ProfileMetric: View {
                 .frame(width: 38, height: 38)
                 .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 11))
             VStack(alignment: .leading, spacing: 1) {
-                Text(value).font(.aeHeading).foregroundStyle(.white)
-                Text(label).font(.aeCaption).foregroundStyle(AEColor.textTertiary(.dark))
+                Text(value).font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
+                Text(label).font(.aeCaption).foregroundStyle(AEColor.textTertiary(colorScheme))
             }
         }
         .padding(AESpacing.md)
@@ -282,22 +310,24 @@ private struct ProfileMetric: View {
 }
 
 private struct SkillMetricRow: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let metric: SkillMetric
 
     var body: some View {
         let color = Color(hex: metric.color)
         VStack(spacing: 7) {
             HStack {
-                Text(metric.name).font(.aeCallout).foregroundStyle(.white)
+                Text(metric.name).font(.aeCallout).foregroundStyle(AEColor.textPrimary(colorScheme))
                 Spacer()
                 if metric.delta > 0 {
                     Text("+\(metric.delta)%")
                         .font(.system(size: 9, weight: .bold, design: .monospaced))
-                        .foregroundStyle(AEColor.signal)
+                        .foregroundStyle(AEColor.readableSignal(colorScheme))
                 }
                 Text("\(Int(metric.value * 100))")
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
-                    .foregroundStyle(color)
+                    .foregroundStyle(AEColor.readableAccent(metric.color, colorScheme))
             }
             ProgressView(value: metric.value).tint(color)
         }
@@ -305,6 +335,8 @@ private struct SkillMetricRow: View {
 }
 
 private struct ReadinessStage: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     let index: Int
     let title: String
     let detail: String
@@ -314,7 +346,7 @@ private struct ReadinessStage: View {
     var body: some View {
         HStack(spacing: AESpacing.md) {
             ZStack {
-                Circle().stroke(Color.white.opacity(0.07), lineWidth: 4)
+                Circle().stroke(AEColor.stroke(colorScheme), lineWidth: 4)
                 Circle()
                     .trim(from: 0, to: min(max(progress, 0), 1))
                     .stroke(color, style: StrokeStyle(lineWidth: 4, lineCap: .round))
@@ -326,8 +358,8 @@ private struct ReadinessStage: View {
             .frame(width: 42, height: 42)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.aeCallout).foregroundStyle(.white)
-                Text(detail).font(.aeCaption).foregroundStyle(AEColor.textTertiary(.dark))
+                Text(title).font(.aeCallout).foregroundStyle(AEColor.textPrimary(colorScheme))
+                Text(detail).font(.aeCaption).foregroundStyle(AEColor.textTertiary(colorScheme))
             }
             Spacer()
             Text("\(Int(min(max(progress, 0), 1) * 100))%")
