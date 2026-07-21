@@ -36,12 +36,22 @@ extension Color {
 struct AEFlowLayout: Layout {
     var spacing: CGFloat = AESpacing.xs
 
+    /// SwiftUI proposes `.infinity` (not nil) for an unbounded width -- e.g. inside a
+    /// ScrollView on macOS. `proposal.width ?? fallback` only catches nil, so an
+    /// infinite proposal stops the rows from ever wrapping and makes sizeThatFits
+    /// return an infinite width, which wedges the layout engine and leaves the view
+    /// unresponsive. Always resolve to a finite width.
+    private func resolvedWidth(_ proposed: CGFloat?) -> CGFloat {
+        guard let width = proposed, width.isFinite, width > 0 else { return 320 }
+        return width
+    }
+
     func sizeThatFits(
         proposal: ProposedViewSize,
         subviews: Subviews,
         cache: inout Void
     ) -> CGSize {
-        let width = proposal.width ?? 320
+        let width = resolvedWidth(proposal.width)
         let result = arrange(subviews: subviews, width: width)
         return CGSize(width: width, height: result.height)
     }
@@ -52,7 +62,7 @@ struct AEFlowLayout: Layout {
         subviews: Subviews,
         cache: inout Void
     ) {
-        let result = arrange(subviews: subviews, width: bounds.width)
+        let result = arrange(subviews: subviews, width: resolvedWidth(bounds.width))
         for (index, point) in result.points.enumerated() {
             subviews[index].place(
                 at: CGPoint(x: bounds.minX + point.x, y: bounds.minY + point.y),

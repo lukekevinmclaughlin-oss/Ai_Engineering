@@ -8,6 +8,7 @@ struct LessonPlayerView: View {
 
     let course: Course
     @State private var currentIndex: Int
+    @State private var showContextualPaywall = false
     @State private var showCompletion = false
     @State private var showTutor = false
 
@@ -172,6 +173,12 @@ struct LessonPlayerView: View {
 
     private func completeLesson() {
         state.progress.complete(lesson, in: course)
+        // Freemium: one contextual Pro offer, right after the first finished lesson.
+        if !state.subscription.hasAccess,
+           !UserDefaults.standard.bool(forKey: "freemium.offer.shown") {
+            UserDefaults.standard.set(true, forKey: "freemium.offer.shown")
+            showContextualPaywall = true
+        }
         withAnimation(reduceMotion ? nil : AEMotion.standard) { showCompletion = true }
     }
 

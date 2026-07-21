@@ -1,0 +1,128 @@
+require "fileutils"
+require "digest/md5"
+require "spaceship/connect_api"
+
+APP_IDENTIFIER = "com.lukemclaughlin.aiengineering"
+APP_VERSION = "1.1.0"
+
+def stage_screenshots(source_directory, destination_root)
+  destination = File.join(destination_root, "en-US")
+  FileUtils.rm_rf(destination_root)
+  FileUtils.mkdir_p(destination)
+  FileUtils.cp(Dir[File.join(source_directory, "*.png")].sort, destination)
+  destination_root
+end
+
+desc "Upload the prepared iPhone and iPad App Store screenshots"
+lane :upload_ios_screenshots do
+  api_key = app_store_connect_api_key
+  staged_path = File.expand_path("../build/fastlane-ios-screenshots", __dir__)
+  sources = [
+    File.expand_path("screenshots/en-US/iPhone-6.9", __dir__),
+    File.expand_path("screenshots/en-US/iPad-13", __dir__)
+  ]
+
+  destination = File.join(staged_path, "en-US")
+  FileUtils.rm_rf(staged_path)
+  FileUtils.mkdir_p(destination)
+  sources.each do |source|
+    device = File.basename(source)
+    Dir[File.join(source, "*.png")].sort.each do |screenshot|
+      FileUtils.cp(screenshot, File.join(destination, "#{device}-#{File.basename(screenshot)}"))
+    end
+  end
+
+  deliver(
+    api_key: api_key,
+    app_identifier: APP_IDENTIFIER,
+    app_version: APP_VERSION,
+    platform: "ios",
+    screenshots_path: staged_path,
+    skip_binary_upload: true,
+    skip_metadata: true,
+    overwrite_screenshots: true,
+    force: true,
+    run_precheck_before_submit: false,
+    submit_for_review: false
+  )
+end
+
+desc "Upload the prepared Mac App Store screenshots"
+lane :upload_macos_screenshots do
+  api_key = app_store_connect_api_key
+  staged_path = File.expand_path("../build/fastlane-macos-screenshots", __dir__)
+  stage_screenshots(File.expand_path("screenshots/en-US/Mac", __dir__), staged_path)
+
+  deliver(
+    api_key: api_key,
+    app_identifier: APP_IDENTIFIER,
+    app_version: APP_VERSION,
+    platform: "osx",
+    screenshots_path: staged_path,
+    skip_binary_upload: true,
+    skip_metadata: true,
+    overwrite_screenshots: true,
+    force: true,
+    run_precheck_before_submit: false,
+    submit_for_review: false
+  )
+end
+
+desc "Upload the App Review screenshot for the universal subscription"
+lane :upload_subscription_review_screenshot do
+  app_store_connect_api_key
+
+  subscription_id = "6789625990"
+  path = File.expand_path("screenshots/en-US/iPhone-6.9/01-free-trial.png", __dir__)
+  bytes = File.binread(path)
+  client = Spaceship::ConnectAPI.client.tunes_request_client
+
+  reservation = client.post(
+    "v1/subscriptionAppStoreReviewScreenshots",
+    {
+      data: {
+        type: "subscriptionAppStoreReviewScreenshots",
+        attributes: {
+          fileName: File.basename(path),
+          fileSize: bytes.bytesize
+        },
+        relationships: {
+          subscription: {
+            data: {
+              type: "subscriptions",
+              id: subscription_id
+            }
+          }
+        }
+      }
+    }
+  ).body.fetch("data")
+
+  screenshot_id = reservation.fetch("id")
+  operations = reservation.fetch("attributes").fetch("uploadOperations")
+  Spaceship::ConnectAPI::FileUploader.upload(operations, bytes)
+
+  client.patch(
+    "v1/subscriptionAppStoreReviewScreenshots/#{screenshot_id}",
+    {
+      data: {
+        type: "subscriptionAppStoreReviewScreenshots",
+        id: screenshot_id,
+        attributes: {
+          uploaded: true,
+          sourceFileChecksum: Digest::MD5.hexdigest(bytes)
+        }
+      }
+    }
+  )
+
+  30.times do
+    response = client.get("v1/subscriptionAppStoreReviewScreenshots/#{screenshot_id}")
+    state = response.body.dig("data", "attributes", "assetDeliveryState", "state")
+    break if state == "COMPLETE"
+    UI.user_error!("Subscription screenshot processing failed") if state == "FAILED"
+    sleep(2)
+  end
+
+  UI.success("Uploaded subscription App Review screenshot")
+end

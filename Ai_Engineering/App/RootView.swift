@@ -49,18 +49,14 @@ struct RootView: View {
     }
 
     var body: some View {
+        // Freemium: the app is never blocked. The first module of every
+        // course is free; deeper modules unlock with Pro.
         Group {
-            if state.subscription.isCheckingAccess {
-                SubscriptionLaunchView()
-            } else if state.subscription.hasAccess {
-                #if os(macOS)
-                desktopLayout
-                #else
-                mobileLayout
-                #endif
-            } else {
-                SubscriptionPaywallView(store: state.subscription)
-            }
+            #if os(macOS)
+            desktopLayout
+            #else
+            mobileLayout
+            #endif
         }
         .tint(AEColor.readableSignal(colorScheme))
         .animation(reduceMotion ? nil : AEMotion.gentle, value: state.appearance)

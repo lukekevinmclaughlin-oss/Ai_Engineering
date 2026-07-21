@@ -9,17 +9,19 @@ final class SubscriptionStore: ObservableObject {
         case subscriptionRequired
     }
 
-    static let platformProductID = "com.lukemclaughlin.aiengineering.pro.monthly.ios"
+    static let platformProductID = "com.lukemclaughlin.aiengineering.pro.monthly"
+    static let annualProductID = "com.lukemclaughlin.aiengineering.pro.annual"
 
     static let allProductIDs: Set<String> = [
-        "com.lukemclaughlin.aiengineering.pro.monthly.ios",
-        "com.lukemclaughlin.aiengineering.pro.monthly.macos"
+        platformProductID,
+        annualProductID,
     ]
     static let manageSubscriptionsURL = URL(string: "https://apps.apple.com/account/subscriptions")!
     static let standardEULAURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
 
     @Published private(set) var accessState: AccessState = .checking
     @Published private(set) var product: Product?
+    @Published private(set) var annualProduct: Product?
     @Published private(set) var isEligibleForTrial = false
     @Published private(set) var isPurchasing = false
     @Published private(set) var isRestoring = false
@@ -57,10 +59,7 @@ final class SubscriptionStore: ObservableObject {
         }
     }
 
-    var hasAccess: Bool {
-        if case .subscribed = accessState { return true }
-        return false
-    }
+    var hasAccess: Bool { true }  // App is free: all content unlocked, no subscription required
 
     var isCheckingAccess: Bool { accessState == .checking }
 
@@ -113,7 +112,14 @@ final class SubscriptionStore: ObservableObject {
             await loadProduct()
             return
         }
+        await purchaseProduct(product)
+    }
 
+    func purchase(_ chosen: Product) async {
+        await purchaseProduct(chosen)
+    }
+
+    private func purchaseProduct(_ product: Product) async {
         isPurchasing = true
         message = nil
         defer { isPurchasing = false }
@@ -154,7 +160,9 @@ final class SubscriptionStore: ObservableObject {
 
     private func loadProduct() async {
         do {
-            product = try await Product.products(for: [Self.platformProductID]).first
+            let loaded = try await Product.products(for: Array(Self.allProductIDs))
+            product = loaded.first { $0.id == Self.platformProductID }
+            annualProduct = loaded.first { $0.id == Self.annualProductID }
             if let subscription = product?.subscription {
                 isEligibleForTrial = await subscription.isEligibleForIntroOffer
             } else {

@@ -3,6 +3,7 @@ import SwiftUI
 struct CourseDetailView: View {
     @EnvironmentObject private var state: AppState
     @Environment(\.colorScheme) private var colorScheme
+    @State private var showPaywall = false
     let course: Course
     private var accent: Color { Color(hex: course.accent) }
     private var textAccent: Color { AEColor.readableAccent(course.accent, colorScheme) }
@@ -23,6 +24,12 @@ struct CourseDetailView: View {
             }
         }
         .navigationTitle(course.title)
+        .sheet(isPresented: $showPaywall) {
+            SubscriptionPaywallView(store: state.subscription)
+                #if os(macOS)
+                .frame(minWidth: 900, minHeight: 620)
+                #endif
+        }
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
@@ -120,6 +127,17 @@ struct CourseDetailView: View {
     @ViewBuilder
     private var courseStartButton: some View {
         if let next = nextLessonLocation {
+            if next.module > 0 && !state.subscription.hasAccess {
+                Button { showPaywall = true } label: {
+                    Label("Unlock the full course", systemImage: "lock.fill")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.black.opacity(0.8))
+                        .padding(.horizontal, AESpacing.lg)
+                        .padding(.vertical, 13)
+                        .background(AEGradient.signal, in: Capsule())
+                }
+                .buttonStyle(.plain)
+            } else {
             NavigationLink {
                 LessonPlayerView(course: course, moduleIndex: next.module, lessonIndex: next.lesson)
             } label: {
@@ -131,6 +149,7 @@ struct CourseDetailView: View {
                     .background(AEGradient.signal, in: Capsule())
             }
             .buttonStyle(.plain)
+            }
         }
     }
 
@@ -188,6 +207,7 @@ private struct CourseHeroStat: View {
 private struct ModuleCard: View {
     @EnvironmentObject private var state: AppState
     @Environment(\.colorScheme) private var colorScheme
+    @State private var showPaywall = false
     let course: Course
     let module: LearningModule
     let moduleIndex: Int
@@ -218,12 +238,26 @@ private struct ModuleCard: View {
 
             VStack(spacing: 0) {
                 ForEach(Array(module.lessons.enumerated()), id: \.element.id) { lessonIndex, lesson in
+                    // Freemium: module 1 is free; later modules are Pro.
+                    if moduleIndex > 0 && !state.subscription.hasAccess {
+                        Button { showPaywall = true } label: {
+                            LessonRow(lesson: lesson, index: lessonIndex + 1, isCompleted: state.progress.isCompleted(lesson), accent: accent)
+                                .overlay(alignment: .trailing) {
+                                    Image(systemName: "lock.fill")
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .foregroundStyle(AEColor.textTertiary(colorScheme))
+                                        .padding(.trailing, AESpacing.lg)
+                                }
+                        }
+                        .buttonStyle(.plain)
+                    } else {
                     NavigationLink {
                         LessonPlayerView(course: course, moduleIndex: moduleIndex, lessonIndex: lessonIndex)
                     } label: {
                         LessonRow(lesson: lesson, index: lessonIndex + 1, isCompleted: state.progress.isCompleted(lesson), accent: accent)
                     }
                     .buttonStyle(.plain)
+                    }
 
                     if lesson.id != module.lessons.last?.id {
                         Divider().overlay(AEColor.divider(colorScheme).opacity(0.72)).padding(.leading, 72)
@@ -232,6 +266,12 @@ private struct ModuleCard: View {
             }
         }
         .aeGlassSurface(cornerRadius: AERadius.large, tint: accent)
+        .sheet(isPresented: $showPaywall) {
+            SubscriptionPaywallView(store: state.subscription)
+                #if os(macOS)
+                .frame(minWidth: 900, minHeight: 620)
+                #endif
+        }
     }
 }
 

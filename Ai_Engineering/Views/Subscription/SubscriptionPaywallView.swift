@@ -23,6 +23,8 @@ struct SubscriptionPaywallView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showPrivacyPolicy = false
+    /// Annual is the recommended plan; monthly remains available.
+    @State private var wantsAnnual = true
 
     var body: some View {
         ZStack {
@@ -144,25 +146,22 @@ struct SubscriptionPaywallView: View {
                     .foregroundStyle(AEColor.textPrimary(colorScheme))
             }
 
-            VStack(alignment: .leading, spacing: 4) {
-                if store.isEligibleForTrial {
-                    Text("14 DAYS FREE")
-                        .font(.system(size: 39, weight: .black, design: .rounded))
-                        .foregroundStyle(AEGradient.spectral)
-                    Text("Then \(store.localizedMonthlyPrice) per month")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundStyle(AEColor.textPrimary(colorScheme))
-                    Text("No charge today. Cancel anytime before the trial ends.")
-                        .font(.aeCaption)
-                        .foregroundStyle(AEColor.textSecondary(colorScheme))
-                } else {
-                    Text("\(store.localizedMonthlyPrice) / MONTH")
-                        .font(.system(size: 35, weight: .black, design: .rounded))
-                        .foregroundStyle(AEGradient.spectral)
-                    Text("Auto-renews monthly until cancelled.")
-                        .font(.aeCaption)
-                        .foregroundStyle(AEColor.textSecondary(colorScheme))
-                }
+            VStack(alignment: .leading, spacing: AESpacing.sm) {
+                planRow(selected: wantsAnnual,
+                        title: "Annual",
+                        badge: "BEST VALUE",
+                        price: store.annualProduct?.displayPrice ?? "$29.99",
+                        caption: "per year") { wantsAnnual = true }
+                planRow(selected: !wantsAnnual,
+                        title: "Monthly",
+                        badge: nil,
+                        price: store.product?.displayPrice ?? store.localizedMonthlyPrice,
+                        caption: "per month") { wantsAnnual = false }
+                Text(store.isEligibleForTrial
+                     ? "7 days free, then the plan you pick. No charge today — cancel anytime."
+                     : "Auto-renews until cancelled. Your progress is never deleted.")
+                    .font(.aeCaption)
+                    .foregroundStyle(AEColor.textSecondary(colorScheme))
             }
             .padding(.vertical, AESpacing.xs)
 
@@ -174,7 +173,13 @@ struct SubscriptionPaywallView: View {
             }
 
             Button {
-                Task { await store.purchase() }
+                Task {
+                    if wantsAnnual, let annual = store.annualProduct {
+                        await store.purchase(annual)
+                    } else {
+                        await store.purchase()
+                    }
+                }
             } label: {
                 HStack(spacing: AESpacing.sm) {
                     if store.isPurchasing { ProgressView().controlSize(.small) }
@@ -402,5 +407,45 @@ private struct SubscriptionPrivacyPolicyView: View {
             Text(title).font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
             Text(body).font(.aeBody).foregroundStyle(AEColor.textSecondary(colorScheme)).lineSpacing(3)
         }
+    }
+}
+
+
+private extension SubscriptionPaywallView {
+    func planRow(selected: Bool, title: String, badge: String?, price: String,
+                 caption: String, tap: @escaping () -> Void) -> some View {
+        Button(action: tap) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text(title)
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(AEColor.textPrimary(colorScheme))
+                        if let badge {
+                            Text(badge)
+                                .font(.system(size: 8.5, weight: .black, design: .monospaced))
+                                .padding(.horizontal, 5).padding(.vertical, 2)
+                                .background(AEColor.signal.opacity(0.16), in: Capsule())
+                                .foregroundStyle(AEColor.readableSignal(colorScheme))
+                        }
+                    }
+                    Text(caption)
+                        .font(.aeCaption)
+                        .foregroundStyle(AEColor.textSecondary(colorScheme))
+                }
+                Spacer()
+                Text(price)
+                    .font(.system(size: 19, weight: .black, design: .rounded))
+                    .foregroundStyle(AEGradient.spectral)
+            }
+            .padding(AESpacing.md)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(selected ? AEColor.signal : AEColor.divider(colorScheme),
+                            lineWidth: selected ? 2 : 1)
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
