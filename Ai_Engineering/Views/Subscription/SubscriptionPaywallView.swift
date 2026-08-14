@@ -141,7 +141,7 @@ struct SubscriptionPaywallView: View {
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .tracking(1.2)
                     .foregroundStyle(AEColor.readableViolet(colorScheme))
-                Text(store.isEligibleForTrial ? "Start with 14 days free" : "Continue your AI journey")
+                Text(store.isEligibleForTrial ? "Start with 7 days free" : "Continue your AI journey")
                     .font(.system(size: 27, weight: .bold, design: .rounded))
                     .foregroundStyle(AEColor.textPrimary(colorScheme))
             }
@@ -212,7 +212,7 @@ struct SubscriptionPaywallView: View {
                     .background(AEColor.subtleFill(colorScheme), in: RoundedRectangle(cornerRadius: AERadius.small))
             }
 
-            Text("Payment is charged to your Apple Account when you confirm. The subscription automatically renews each month unless cancelled at least 24 hours before the end of the current period.")
+            Text("Payment is charged to your Apple Account when you confirm. The subscription automatically renews at the end of each billing period — monthly or yearly, depending on the plan you choose — unless cancelled at least 24 hours before the current period ends.")
                 .font(.system(size: 10, weight: .medium, design: .rounded))
                 .foregroundStyle(AEColor.textTertiary(colorScheme))
                 .lineSpacing(2)

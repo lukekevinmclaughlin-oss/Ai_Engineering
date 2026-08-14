@@ -175,6 +175,7 @@ struct LessonPlayerView: View {
         state.progress.complete(lesson, in: course)
         // Freemium: one contextual Pro offer, right after the first finished lesson.
         if !state.subscription.hasAccess,
+           !state.subscription.isCheckingAccess,
            !UserDefaults.standard.bool(forKey: "freemium.offer.shown") {
             UserDefaults.standard.set(true, forKey: "freemium.offer.shown")
             showContextualPaywall = true

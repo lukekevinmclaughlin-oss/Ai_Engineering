@@ -59,7 +59,10 @@ final class SubscriptionStore: ObservableObject {
         }
     }
 
-    var hasAccess: Bool { true }  // App is free: all content unlocked, no subscription required
+    var hasAccess: Bool {
+        if case .subscribed = accessState { return true }
+        return false
+    }
 
     var isCheckingAccess: Bool { accessState == .checking }
 
