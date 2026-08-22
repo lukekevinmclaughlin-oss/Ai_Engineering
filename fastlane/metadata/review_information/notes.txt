@@ -1,6 +1,6 @@
 Ai_Engineering requires no account or login.
 
-On first launch, the subscription screen appears. Use the sandbox purchase sheet to begin the 14-day introductory trial for the platform-specific Ai_Engineering Pro Monthly subscription. The Restore Purchases control is directly below the main purchase button.
+The Home screen explains the free tier without blocking access. Tap Start Free Trial, or open any course and select a locked module, to reach the subscription screen. Use the sandbox purchase sheet to begin the 7-day introductory trial for Ai_Engineering Pro Monthly or Annual. Restore Purchases and Continue Free are directly below the main purchase button.
 
 After entitlement verification, all five main sections are available: Home, Learn, Tutor, Projects, and Progress. Tutor Core works offline and does not require an external API key. Optional external providers are disabled by default and are not needed for review.
 

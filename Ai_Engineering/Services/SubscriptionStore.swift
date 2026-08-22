@@ -73,7 +73,7 @@ final class SubscriptionStore: ObservableObject {
         return product != nil
     }
 
-    var localizedMonthlyPrice: String { product?.displayPrice ?? "$1.99" }
+    var localizedMonthlyPrice: String { product?.displayPrice ?? "$4.99" }
 
     var entitlementDescription: String {
         switch accessState {

@@ -24,37 +24,37 @@
         {
           "adHocOffers" : [],
           "codeOffers" : [],
-          "displayPrice" : "1.99",
+          "displayPrice" : "29.99",
           "familyShareable" : true,
           "groupNumber" : 1,
           "internalID" : "2A5EC0B0-349B-4636-AEF4-E8B7F60A40D1",
           "introductoryOffer" : {
             "internalID" : "059960BD-36D8-423E-B2E5-905267B7FBAC",
             "paymentMode" : "free",
-            "subscriptionPeriod" : "P2W"
+            "subscriptionPeriod" : "P1W"
           },
           "localizations" : [
             {
               "description" : "Unlock the complete AI engineering curriculum, interactive labs, portfolio projects, and private Tutor Core.",
-              "displayName" : "Ai_Engineering Pro Monthly",
+              "displayName" : "AI Engineering Pro Annual",
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.lukemclaughlin.aiengineering.pro.monthly.ios",
-          "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Ai_Engineering Pro Monthly — iOS"
+          "productID" : "com.lukemclaughlin.aiengineering.pro.annual",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Pro Annual"
         },
         {
           "adHocOffers" : [],
           "codeOffers" : [],
-          "displayPrice" : "1.99",
+          "displayPrice" : "4.99",
           "familyShareable" : true,
           "groupNumber" : 1,
           "internalID" : "C4C74A3D-1E9A-4EB7-892B-2BC1C6309517",
           "introductoryOffer" : {
             "internalID" : "EB59D0E5-08D6-4077-9A46-1095E294AA42",
             "paymentMode" : "free",
-            "subscriptionPeriod" : "P2W"
+            "subscriptionPeriod" : "P1W"
           },
           "localizations" : [
             {
@@ -63,9 +63,9 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.lukemclaughlin.aiengineering.pro.monthly.macos",
+          "productID" : "com.lukemclaughlin.aiengineering.pro.monthly",
           "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Ai_Engineering Pro Monthly — macOS"
+          "referenceName" : "Pro Monthly"
         }
       ]
     }
