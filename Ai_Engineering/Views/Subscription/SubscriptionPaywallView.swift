@@ -1,3 +1,13 @@
+#if DIRECT_DISTRIBUTION
+import SwiftUI
+
+/// A compile-time placeholder for sheet call sites that are unreachable in the
+/// permanently unlocked Direct edition. No purchase UI is shipped.
+struct SubscriptionPaywallView: View {
+    let store: SubscriptionStore
+    var body: some View { EmptyView() }
+}
+#else
 import SwiftUI
 
 struct SubscriptionLaunchView: View {
@@ -462,3 +472,4 @@ private extension SubscriptionPaywallView {
         .buttonStyle(.plain)
     }
 }
+#endif

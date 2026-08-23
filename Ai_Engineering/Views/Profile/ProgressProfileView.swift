@@ -203,16 +203,22 @@ struct ProgressProfileView: View {
 
             HStack(alignment: .center, spacing: AESpacing.md) {
                 VStack(alignment: .leading, spacing: 3) {
+                    #if DIRECT_DISTRIBUTION
+                    Text("Ai_Engineering Direct").font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
+                    #else
                     Text("Ai_Engineering Pro").font(.aeHeading).foregroundStyle(AEColor.textPrimary(colorScheme))
+                    #endif
                     Text(state.subscription.entitlementDescription)
                         .font(.aeCallout)
                         .foregroundStyle(AEColor.textSecondary(colorScheme))
                 }
                 Spacer()
+                #if !DIRECT_DISTRIBUTION
                 Link(destination: SubscriptionStore.manageSubscriptionsURL) {
                     Text("Manage")
                 }
                 .buttonStyle(AEButtonStyle(.outline, size: .compact, tint: AEColor.azure))
+                #endif
             }
 
             Divider().overlay(AEColor.stroke(colorScheme))
