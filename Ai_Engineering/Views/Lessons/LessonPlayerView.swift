@@ -1,12 +1,16 @@
 import SwiftUI
+#if !DIRECT_DISTRIBUTION
 import StoreKit
+#endif
 
 struct LessonPlayerView: View {
     @EnvironmentObject private var state: AppState
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    #if !DIRECT_DISTRIBUTION
     @Environment(\.requestReview) private var requestReview
+    #endif
 
     let course: Course
     @State private var currentIndex: Int
@@ -188,6 +192,7 @@ struct LessonPlayerView: View {
             UserDefaults.standard.set(true, forKey: "freemium.offer.shown")
             showContextualPaywall = true
         }
+        #if !DIRECT_DISTRIBUTION
         if ReviewPromptPolicy.shouldRequest(
             completedLessonCount: state.progress.completedLessonCount,
             paywallWillBePresented: showContextualPaywall
@@ -196,6 +201,7 @@ struct LessonPlayerView: View {
                 requestReview()
             }
         }
+        #endif
         withAnimation(reduceMotion ? nil : AEMotion.standard) { showCompletion = true }
     }
 
