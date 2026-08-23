@@ -20,6 +20,7 @@ struct SubscriptionLaunchView: View {
 
 struct SubscriptionPaywallView: View {
     @ObservedObject var store: SubscriptionStore
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var showPrivacyPolicy = false
@@ -202,6 +203,18 @@ struct SubscriptionPaywallView: View {
             }
             .buttonStyle(AEButtonStyle(.ghost, size: .compact, expands: true))
             .disabled(store.isPurchasing || store.isRestoring)
+
+            Button("Continue free") { dismiss() }
+                .buttonStyle(.plain)
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .foregroundStyle(AEColor.readableAzure(colorScheme))
+                .frame(maxWidth: .infinity)
+
+            Text("Continue with every course's first module, saved progress, and offline learning tools. Upgrade only when you want the full curriculum.")
+                .font(.aeCaption)
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
 
             if let message = store.message {
                 Label(message, systemImage: "info.circle.fill")
