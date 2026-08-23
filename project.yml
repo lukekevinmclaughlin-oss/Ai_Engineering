@@ -1,5 +1,10 @@
 name: Ai_Engineering
 
+configs:
+  Debug: debug
+  Release: release
+  Direct: release
+
 options:
   minimumXcodeGenVersion: 2.38.0
   bundleIdPrefix: com.lukemclaughlin
@@ -62,6 +67,16 @@ targets:
         "ENABLE_HARDENED_RUNTIME[sdk=macosx*]": YES
         "TARGETED_DEVICE_FAMILY[sdk=iphoneos*]": "1,2"
         "TARGETED_DEVICE_FAMILY[sdk=iphonesimulator*]": "1,2"
+      configs:
+        Direct:
+          PRODUCT_BUNDLE_IDENTIFIER: com.lukemclaughlin.aiengineering.direct
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) DIRECT_DISTRIBUTION"
+          CODE_SIGN_ENTITLEMENTS: Ai_Engineering/Ai_Engineering-Direct.entitlements
+          CODE_SIGN_IDENTITY: "Developer ID Application"
+          CODE_SIGN_STYLE: Manual
+          ENABLE_HARDENED_RUNTIME: YES
+          OTHER_CODE_SIGN_FLAGS: --timestamp
+          CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
 
   Ai_EngineeringTests:
     type: bundle.unit-test
