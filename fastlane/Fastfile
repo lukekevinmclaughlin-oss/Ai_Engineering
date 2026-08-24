@@ -3,7 +3,7 @@ require "digest/md5"
 require "spaceship/connect_api"
 
 APP_IDENTIFIER = "com.lukemclaughlin.aiengineering"
-APP_VERSION = "1.1.0"
+APP_VERSION = "1.1.2"
 
 def stage_screenshots(source_directory, destination_root)
   destination = File.join(destination_root, "en-US")
@@ -68,16 +68,17 @@ lane :upload_macos_screenshots do
   )
 end
 
-desc "Upload the App Review screenshot for the universal subscription"
+desc "Upload the App Review screenshot for both Pro subscriptions"
 lane :upload_subscription_review_screenshot do
   app_store_connect_api_key
 
-  subscription_id = "6789625990"
+  subscription_ids = ["6793112832", "6793116570"]
   path = File.expand_path("screenshots/en-US/iPhone-6.9/01-free-trial.png", __dir__)
   bytes = File.binread(path)
   client = Spaceship::ConnectAPI.client.tunes_request_client
 
-  reservation = client.post(
+  subscription_ids.each do |subscription_id|
+    reservation = client.post(
     "v1/subscriptionAppStoreReviewScreenshots",
     {
       data: {
@@ -96,13 +97,13 @@ lane :upload_subscription_review_screenshot do
         }
       }
     }
-  ).body.fetch("data")
+    ).body.fetch("data")
 
-  screenshot_id = reservation.fetch("id")
-  operations = reservation.fetch("attributes").fetch("uploadOperations")
-  Spaceship::ConnectAPI::FileUploader.upload(operations, bytes)
+    screenshot_id = reservation.fetch("id")
+    operations = reservation.fetch("attributes").fetch("uploadOperations")
+    Spaceship::ConnectAPI::FileUploader.upload(operations, bytes)
 
-  client.patch(
+    client.patch(
     "v1/subscriptionAppStoreReviewScreenshots/#{screenshot_id}",
     {
       data: {
@@ -114,15 +115,16 @@ lane :upload_subscription_review_screenshot do
         }
       }
     }
-  )
+    )
 
-  30.times do
-    response = client.get("v1/subscriptionAppStoreReviewScreenshots/#{screenshot_id}")
-    state = response.body.dig("data", "attributes", "assetDeliveryState", "state")
-    break if state == "COMPLETE"
-    UI.user_error!("Subscription screenshot processing failed") if state == "FAILED"
-    sleep(2)
+    30.times do
+      response = client.get("v1/subscriptionAppStoreReviewScreenshots/#{screenshot_id}")
+      state = response.body.dig("data", "attributes", "assetDeliveryState", "state")
+      break if state == "COMPLETE"
+      UI.user_error!("Subscription screenshot processing failed") if state == "FAILED"
+      sleep(2)
+    end
   end
 
-  UI.success("Uploaded subscription App Review screenshot")
+  UI.success("Uploaded App Review screenshots for both subscriptions")
 end

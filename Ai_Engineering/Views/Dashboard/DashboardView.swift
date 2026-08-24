@@ -4,6 +4,8 @@ struct DashboardView: View {
     @EnvironmentObject private var state: AppState
     @Environment(\.colorScheme) private var colorScheme
     @Binding var selection: AppSection
+    @AppStorage("freemium.intro.dismissed") private var dismissedFreemiumIntro = false
+    @State private var showIntroPaywall = false
 
     private let columns = [GridItem(.adaptive(minimum: 210), spacing: AESpacing.md)]
 
@@ -14,6 +16,12 @@ struct DashboardView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: AESpacing.xl) {
                     dashboardHeader
+
+                    if !state.subscription.hasAccess,
+                       !state.subscription.isCheckingAccess,
+                       !dismissedFreemiumIntro {
+                        freemiumIntro
+                    }
 
                     AIConstructionProgressView(snapshot: assemblySnapshot, presentation: .dashboard)
 
@@ -42,6 +50,12 @@ struct DashboardView: View {
             }
         }
         .navigationTitle("")
+        .sheet(isPresented: $showIntroPaywall) {
+            SubscriptionPaywallView(store: state.subscription)
+                #if os(macOS)
+                .frame(minWidth: 900, minHeight: 620)
+                #endif
+        }
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
@@ -89,6 +103,51 @@ struct DashboardView: View {
             HeaderMetric(icon: "flame.fill", value: "\(state.progress.streak)", label: "day streak", color: AEColor.amber)
             HeaderMetric(icon: "bolt.fill", value: "\(state.progress.totalXP)", label: "total XP", color: AEColor.signal)
         }
+    }
+
+    private var freemiumIntro: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .center, spacing: AESpacing.lg) {
+                freemiumIntroCopy
+                Spacer(minLength: AESpacing.md)
+                freemiumIntroActions
+            }
+            VStack(alignment: .leading, spacing: AESpacing.md) {
+                freemiumIntroCopy
+                freemiumIntroActions
+            }
+        }
+        .padding(AESpacing.lg)
+        .aeGlassSurface(cornerRadius: AERadius.large, tint: AEColor.signal)
+    }
+
+    private var freemiumIntroCopy: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text("START FREE · GO PRO WHEN READY")
+                .font(.system(size: 10, weight: .bold, design: .monospaced))
+                .tracking(1)
+                .foregroundStyle(AEColor.readableSignal(colorScheme))
+            Text("Learn the fundamentals free")
+                .font(.aeHeading)
+                .foregroundStyle(AEColor.textPrimary(colorScheme))
+            Text("The first module of every course is included. Pro unlocks all 400 lessons, labs, projects, and Tutor Core across iPhone, iPad, and Mac.")
+                .font(.aeCallout)
+                .foregroundStyle(AEColor.textSecondary(colorScheme))
+                .frame(maxWidth: 650, alignment: .leading)
+        }
+    }
+
+    private var freemiumIntroActions: some View {
+        HStack(spacing: AESpacing.sm) {
+            Button("Continue free") { dismissedFreemiumIntro = true }
+                .buttonStyle(AEButtonStyle(.ghost, size: .compact))
+            Button(storeTrialTitle) { showIntroPaywall = true }
+                .buttonStyle(AEButtonStyle(.primary, size: .compact, tint: AEColor.signal))
+        }
+    }
+
+    private var storeTrialTitle: String {
+        state.subscription.isEligibleForTrial ? "Start free trial" : "Try Premium"
     }
 
     private var metrics: some View {

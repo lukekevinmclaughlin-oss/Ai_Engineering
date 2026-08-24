@@ -20,7 +20,7 @@ The same target runs on iPhone, iPad, and macOS. iOS uses a compact tab-based ex
 - Project Lab with 40 realistic briefs, outcomes, project-scoped milestones, syntax-highlighted editable starter files, and simulated local quality checks
 - Progress profile with role readiness, skill matrix, levels, and adjustable learning goals
 - Shared unit tests for curriculum integrity and progress persistence
-- StoreKit 2 subscription access on iOS and macOS with a 14-day introductory trial, localized monthly pricing, verified entitlements, purchase restoration, and subscription management
+- StoreKit 2 subscription access on iOS and macOS with a 7-day introductory trial, localized monthly and annual pricing, verified entitlements, purchase restoration, and subscription management
 
 ## Curriculum
 

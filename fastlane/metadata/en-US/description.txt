@@ -28,9 +28,17 @@ DESIGNED FOR SERIOUS PROGRESS
 
 Earn XP, build streaks, bookmark material, track skill readiness, choose daily goals, and move naturally between iPhone, iPad, and Mac.
 
-SUBSCRIPTION
+START FREE
 
-Ai_Engineering Pro includes a 14-day free introductory trial for eligible new subscribers, then renews monthly at the price shown in the app. Payment is charged to your Apple Account after confirmation. The subscription automatically renews unless cancelled at least 24 hours before the end of the current period. Manage or cancel in Apple Account subscription settings.
+Download and begin without an account. The first module of every course is free, so you can experience the lessons, exercises, saved progress, and offline-first learning flow before deciding whether to upgrade.
 
-Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
-Privacy Policy: https://github.com/lukekevinmclaughlin-oss/Ai_Engineering/blob/main/PRIVACY.md
+AI_ENGINEERING PRO
+
+Pro unlocks the complete 40-course curriculum, all 400 lessons and 140 code labs, all 40 portfolio projects, contextual Tutor Core, and the full progress experience across iPhone, iPad, and Mac.
+
+Choose Pro Monthly or Pro Annual. Eligible new subscribers can start with a 7-day free trial. The localized price and renewal period are shown before purchase.
+
+Payment is charged to your Apple Account when you confirm. The subscription renews automatically unless cancelled at least 24 hours before the end of the current period. You can restore purchases in the app and manage or cancel from Apple Account subscription settings. If a subscription expires or is cancelled, completed progress remains saved and the free tier remains available.
+
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Privacy Policy: https://www.lukekevinmclaughlin.com/privacy

@@ -1,10 +1,12 @@
 import SwiftUI
+import StoreKit
 
 struct LessonPlayerView: View {
     @EnvironmentObject private var state: AppState
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.requestReview) private var requestReview
 
     let course: Course
     @State private var currentIndex: Int
@@ -61,6 +63,12 @@ struct LessonPlayerView: View {
             #if os(macOS)
             .frame(minWidth: 900, minHeight: 680)
             #endif
+        }
+        .sheet(isPresented: $showContextualPaywall) {
+            SubscriptionPaywallView(store: state.subscription)
+                #if os(macOS)
+                .frame(minWidth: 900, minHeight: 620)
+                #endif
         }
         #if os(macOS)
         .frame(minWidth: 850, minHeight: 620)
@@ -179,6 +187,14 @@ struct LessonPlayerView: View {
            !UserDefaults.standard.bool(forKey: "freemium.offer.shown") {
             UserDefaults.standard.set(true, forKey: "freemium.offer.shown")
             showContextualPaywall = true
+        }
+        if ReviewPromptPolicy.shouldRequest(
+            completedLessonCount: state.progress.completedLessonCount,
+            paywallWillBePresented: showContextualPaywall
+        ) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                requestReview()
+            }
         }
         withAnimation(reduceMotion ? nil : AEMotion.standard) { showCompletion = true }
     }
