@@ -1,3 +1,20 @@
+#if DIRECT_DISTRIBUTION
+import Combine
+import Foundation
+
+/// The website edition is purchased once and is permanently unlocked.
+/// StoreKit and recurring-purchase state are excluded from this build.
+@MainActor
+final class SubscriptionStore: ObservableObject {
+    @Published private(set) var hasAccess = true
+    @Published private(set) var isCheckingAccess = false
+    @Published private(set) var isEligibleForTrial = false
+
+    var entitlementDescription: String { "Direct edition · fully unlocked" }
+
+    func prepare() async {}
+}
+#else
 import Foundation
 import StoreKit
 
@@ -230,3 +247,4 @@ private enum SubscriptionError: LocalizedError {
         "The App Store transaction could not be verified."
     }
 }
+#endif
