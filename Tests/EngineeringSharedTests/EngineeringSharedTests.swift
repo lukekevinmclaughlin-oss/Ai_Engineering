@@ -6,7 +6,7 @@ final class EngineeringSharedTests: XCTestCase {
         let lesson = Lesson(
             id: "lesson",
             title: "Ship safely",
-            kind: .lesson,
+            kind: .concept,
             estimatedMinutes: 15,
             xp: 25,
             summary: "A focused lesson",
