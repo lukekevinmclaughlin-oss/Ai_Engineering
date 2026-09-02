@@ -2,6 +2,11 @@ import Foundation
 
 public struct Curriculum: Codable, Sendable {
     public let courses: [Course]
+
+
+    init(courses: [Course]) {
+        self.courses = courses
+    }
 }
 
 public struct Course: Codable, Identifiable, Hashable, Sendable {
@@ -24,6 +29,33 @@ public struct Course: Codable, Identifiable, Hashable, Sendable {
     public var lessonCount: Int {
         lessons.count
     }
+
+
+    init(
+        id: String,
+        title: String,
+        eyebrow: String,
+        summary: String,
+        icon: String,
+        accent: String,
+        difficulty: String,
+        estimatedMinutes: Int,
+        isFeatured: Bool,
+        skills: [String],
+        modules: [LearningModule]
+    ) {
+        self.id = id
+        self.title = title
+        self.eyebrow = eyebrow
+        self.summary = summary
+        self.icon = icon
+        self.accent = accent
+        self.difficulty = difficulty
+        self.estimatedMinutes = estimatedMinutes
+        self.isFeatured = isFeatured
+        self.skills = skills
+        self.modules = modules
+    }
 }
 
 public struct LearningModule: Codable, Identifiable, Hashable, Sendable {
@@ -31,6 +63,14 @@ public struct LearningModule: Codable, Identifiable, Hashable, Sendable {
     public let title: String
     public let summary: String
     public let lessons: [Lesson]
+
+
+    init(id: String, title: String, summary: String, lessons: [Lesson]) {
+        self.id = id
+        self.title = title
+        self.summary = summary
+        self.lessons = lessons
+    }
 }
 
 public struct Lesson: Codable, Identifiable, Hashable, Sendable {
@@ -42,6 +82,27 @@ public struct Lesson: Codable, Identifiable, Hashable, Sendable {
     public let summary: String
     public let contentBlocks: [LessonContentBlock]
     public let challenge: LessonChallenge?
+
+
+    init(
+        id: String,
+        title: String,
+        kind: LessonKind,
+        estimatedMinutes: Int,
+        xp: Int,
+        summary: String,
+        contentBlocks: [LessonContentBlock],
+        challenge: LessonChallenge?
+    ) {
+        self.id = id
+        self.title = title
+        self.kind = kind
+        self.estimatedMinutes = estimatedMinutes
+        self.xp = xp
+        self.summary = summary
+        self.contentBlocks = contentBlocks
+        self.challenge = challenge
+    }
 }
 
 public enum LessonKind: String, Codable, CaseIterable, Sendable {
@@ -74,6 +135,14 @@ public struct LessonContentBlock: Codable, Hashable, Sendable {
     public let text: String
     public let language: String?
     public let items: [String]?
+
+
+    init(type: ContentBlockType, text: String, language: String?, items: [String]?) {
+        self.type = type
+        self.text = text
+        self.language = language
+        self.items = items
+    }
 }
 
 public enum ContentBlockType: String, Codable, Sendable {
@@ -94,16 +163,51 @@ public struct LessonChallenge: Codable, Hashable, Sendable {
     public let correctChoiceID: String?
     public let explanation: String
     public let hints: [String]
+
+
+    init(
+        prompt: String,
+        instructions: String,
+        starterCode: String?,
+        solution: String?,
+        testCases: [ChallengeTestCase]?,
+        choices: [ChallengeChoice]?,
+        correctChoiceID: String?,
+        explanation: String,
+        hints: [String]
+    ) {
+        self.prompt = prompt
+        self.instructions = instructions
+        self.starterCode = starterCode
+        self.solution = solution
+        self.testCases = testCases
+        self.choices = choices
+        self.correctChoiceID = correctChoiceID
+        self.explanation = explanation
+        self.hints = hints
+    }
 }
 
 public struct ChallengeChoice: Codable, Identifiable, Hashable, Sendable {
     public let id: String
     public let text: String
+
+
+    init(id: String, text: String) {
+        self.id = id
+        self.text = text
+    }
 }
 
 public struct ChallengeTestCase: Codable, Hashable, Sendable {
     public let input: String
     public let expected: String
+
+
+    init(input: String, expected: String) {
+        self.input = input
+        self.expected = expected
+    }
 }
 
 public struct LabProject: Identifiable, Hashable, Sendable {
@@ -121,6 +225,39 @@ public struct LabProject: Identifiable, Hashable, Sendable {
     public let milestones: [ProjectMilestone]
     public let brief: String
     public let starterFiles: [StarterFile]
+
+
+    init(
+        id: String,
+        title: String,
+        subtitle: String,
+        summary: String,
+        icon: String,
+        accent: String,
+        difficulty: String,
+        estimatedHours: Int,
+        xp: Int,
+        skills: [String],
+        outcomes: [String],
+        milestones: [ProjectMilestone],
+        brief: String,
+        starterFiles: [StarterFile]
+    ) {
+        self.id = id
+        self.title = title
+        self.subtitle = subtitle
+        self.summary = summary
+        self.icon = icon
+        self.accent = accent
+        self.difficulty = difficulty
+        self.estimatedHours = estimatedHours
+        self.xp = xp
+        self.skills = skills
+        self.outcomes = outcomes
+        self.milestones = milestones
+        self.brief = brief
+        self.starterFiles = starterFiles
+    }
 }
 
 public struct ProjectMilestone: Identifiable, Hashable, Sendable {
@@ -136,6 +273,14 @@ public struct ProjectMilestone: Identifiable, Hashable, Sendable {
     public func progressID(projectID: String) -> String {
         "\(projectID)::\(id)"
     }
+
+
+    init(id: String, title: String, detail: String, systemImage: String) {
+        self.id = id
+        self.title = title
+        self.detail = detail
+        self.systemImage = systemImage
+    }
 }
 
 public struct StarterFile: Identifiable, Hashable, Sendable {
@@ -143,6 +288,13 @@ public struct StarterFile: Identifiable, Hashable, Sendable {
     public let name: String
     public let language: String
     public let contents: String
+
+
+    init(name: String, language: String, contents: String) {
+        self.name = name
+        self.language = language
+        self.contents = contents
+    }
 }
 
 public struct SkillMetric: Identifiable, Hashable, Sendable {
@@ -151,4 +303,12 @@ public struct SkillMetric: Identifiable, Hashable, Sendable {
     public let value: Double
     public let delta: Int
     public let color: String
+
+
+    init(name: String, value: Double, delta: Int, color: String) {
+        self.name = name
+        self.value = value
+        self.delta = delta
+        self.color = color
+    }
 }

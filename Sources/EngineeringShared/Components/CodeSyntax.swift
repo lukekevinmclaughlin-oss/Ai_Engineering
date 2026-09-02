@@ -134,6 +134,13 @@ public struct SyntaxToken: Equatable, Sendable {
     public let kind: SyntaxTokenKind
 
     public var range: NSRange { NSRange(location: location, length: length) }
+
+
+    init(location: Int, length: Int, kind: SyntaxTokenKind) {
+        self.location = location
+        self.length = length
+        self.kind = kind
+    }
 }
 
 /// A compact lexer intended for instructional snippets and local workspaces.
@@ -281,6 +288,13 @@ public struct SyntaxRGB {
         #else
         NSColor(srgbRed: red, green: green, blue: blue, alpha: 1)
         #endif
+    }
+
+
+    init(red: Double, green: Double, blue: Double) {
+        self.red = red
+        self.green = green
+        self.blue = blue
     }
 }
 

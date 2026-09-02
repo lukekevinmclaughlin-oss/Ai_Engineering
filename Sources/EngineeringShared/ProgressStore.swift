@@ -12,6 +12,31 @@ public struct LearnerProgress: Codable, Equatable {
     public var streak = 0
     public var lastActivityDay: String?
     public var dailyGoal = 100
+
+
+    init(
+        completedLessonIDs: Set<String> = [],
+        completedMilestoneIDs: Set<String> = [],
+        bookmarkedCourseIDs: Set<String> = [],
+        recentLessonIDs: [String] = [],
+        skillXP: [String: Int] = [:],
+        dailyXP: [String: Int] = [:],
+        totalXP: Int = 0,
+        streak: Int = 0,
+        lastActivityDay: String? = nil,
+        dailyGoal: Int = 100
+    ) {
+        self.completedLessonIDs = completedLessonIDs
+        self.completedMilestoneIDs = completedMilestoneIDs
+        self.bookmarkedCourseIDs = bookmarkedCourseIDs
+        self.recentLessonIDs = recentLessonIDs
+        self.skillXP = skillXP
+        self.dailyXP = dailyXP
+        self.totalXP = totalXP
+        self.streak = streak
+        self.lastActivityDay = lastActivityDay
+        self.dailyGoal = dailyGoal
+    }
 }
 
 @MainActor

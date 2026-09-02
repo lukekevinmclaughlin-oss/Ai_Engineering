@@ -34,6 +34,13 @@ public struct TutorSource: Identifiable, Codable, Equatable, Hashable, Sendable 
     public let id: String
     public let title: String
     public let location: String
+
+
+    init(id: String, title: String, location: String) {
+        self.id = id
+        self.title = title
+        self.location = location
+    }
 }
 
 public struct TutorContext: Codable, Equatable, Hashable, Sendable {
@@ -89,6 +96,23 @@ public struct TutorContext: Codable, Equatable, Hashable, Sendable {
         if let courseTitle { return courseTitle }
         if projectID != nil { return "Portfolio project" }
         return "40 courses · 400 lessons"
+    }
+
+
+    init(
+        courseID: String? = nil,
+        courseTitle: String? = nil,
+        lessonID: String? = nil,
+        lessonTitle: String? = nil,
+        projectID: String? = nil,
+        projectTitle: String? = nil
+    ) {
+        self.courseID = courseID
+        self.courseTitle = courseTitle
+        self.lessonID = lessonID
+        self.lessonTitle = lessonTitle
+        self.projectID = projectID
+        self.projectTitle = projectTitle
     }
 }
 
@@ -180,6 +204,17 @@ public struct TutorPreferences: Codable, Equatable, Sendable {
     public var engine: TutorEngineChoice = .automatic
     public var learnerLevel: TutorLearnerLevel = .firstSteps
     public var answerDepth: TutorAnswerDepth = .deepDive
+
+
+    init(
+        engine: TutorEngineChoice = .automatic,
+        learnerLevel: TutorLearnerLevel = .firstSteps,
+        answerDepth: TutorAnswerDepth = .deepDive
+    ) {
+        self.engine = engine
+        self.learnerLevel = learnerLevel
+        self.answerDepth = answerDepth
+    }
 }
 
 public enum TutorConnectionMode: String, Codable, CaseIterable, Identifiable, Sendable {
@@ -459,6 +494,13 @@ public struct TutorAnswer: Sendable {
     public let content: String
     public let engineName: String
     public let sources: [TutorSource]
+
+
+    init(content: String, engineName: String, sources: [TutorSource]) {
+        self.content = content
+        self.engineName = engineName
+        self.sources = sources
+    }
 }
 
 public struct TutorKnowledgeDocument: Identifiable, Hashable, Sendable {
@@ -477,5 +519,24 @@ public struct TutorKnowledgeDocument: Identifiable, Hashable, Sendable {
 
     public var source: TutorSource {
         TutorSource(id: id, title: title, location: location)
+    }
+
+
+    init(
+        id: String,
+        kind: Kind,
+        title: String,
+        location: String,
+        summary: String,
+        body: String,
+        keywords: [String]
+    ) {
+        self.id = id
+        self.kind = kind
+        self.title = title
+        self.location = location
+        self.summary = summary
+        self.body = body
+        self.keywords = keywords
     }
 }

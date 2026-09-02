@@ -6,6 +6,13 @@ public struct TutorLocalServerDetection: Identifiable, Equatable, Sendable {
     public let models: [String]
 
     public var id: String { server.id }
+
+
+    init(server: TutorLocalServer, endpoint: String, models: [String]) {
+        self.server = server
+        self.endpoint = endpoint
+        self.models = models
+    }
 }
 
 public enum LocalTutorServerDiscoveryError: LocalizedError {

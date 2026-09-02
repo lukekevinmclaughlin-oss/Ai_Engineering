@@ -135,6 +135,23 @@ public struct AESyntaxCodeBlock: View {
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) { didCopy = false }
         }
     }
+
+
+    init(
+        code: String,
+        language: CodeLanguage,
+        title: String? = nil,
+        accent: Color = AEColor.azure,
+        labelAccent: Color? = nil,
+        showsCopyButton: Bool = true
+    ) {
+        self.code = code
+        self.language = language
+        self.title = title
+        self.accent = accent
+        self.labelAccent = labelAccent
+        self.showsCopyButton = showsCopyButton
+    }
 }
 
 public struct AESyntaxCodeEditor: View {
@@ -215,6 +232,25 @@ public struct AESyntaxCodeEditor: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Editable \(language.title) workspace, \(fileName)")
     }
+
+
+    init(
+        text: Binding<String>,
+        language: CodeLanguage,
+        fileName: String,
+        accent: Color = AEColor.azure,
+        labelAccent: Color? = nil,
+        minHeight: CGFloat = 260,
+        isRunning: Bool = false
+    ) {
+        self._text = text
+        self.language = language
+        self.fileName = fileName
+        self.accent = accent
+        self.labelAccent = labelAccent
+        self.minHeight = minHeight
+        self.isRunning = isRunning
+    }
 }
 
 public struct AECodeConsole: View {
@@ -289,6 +325,19 @@ public struct AECodeConsole: View {
             return AEColor.amber
         }
         return labelAccent ?? accent
+    }
+
+
+    init(
+        lines: [String],
+        accent: Color = AEColor.signal,
+        labelAccent: Color? = nil,
+        isRunning: Bool = false
+    ) {
+        self.lines = lines
+        self.accent = accent
+        self.labelAccent = labelAccent
+        self.isRunning = isRunning
     }
 }
 

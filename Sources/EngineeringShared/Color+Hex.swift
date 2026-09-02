@@ -90,4 +90,9 @@ public struct AEFlowLayout: Layout {
         }
         return (points, y + lineHeight)
     }
+
+
+    init(spacing: CGFloat = AESpacing.xs) {
+        self.spacing = spacing
+    }
 }
