@@ -395,30 +395,41 @@ private struct TrialNeuralCoreView: View {
 
     private func neuralNetwork(at time: TimeInterval) -> some View {
         Canvas { context, canvasSize in
-            let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
-            let count = 11
-            var lines = Path()
-            for index in 0..<count {
-                let angle = Double(index) / Double(count) * .pi * 2 + time * 0.06
-                let radius = size * (index.isMultiple(of: 3) ? 0.34 : 0.27)
-                let point = CGPoint(
-                    x: center.x + cos(angle) * radius,
-                    y: center.y + sin(angle) * radius
-                )
-                lines.move(to: center)
-                lines.addLine(to: point)
-                let pulse = 2.4 + sin(time * 2.1 + Double(index)) * 0.9
-                let node = CGRect(
-                    x: point.x - pulse,
-                    y: point.y - pulse,
-                    width: pulse * 2,
-                    height: pulse * 2
-                )
-                let tint = index.isMultiple(of: 2) ? AEColor.signal : AEColor.azure
-                context.fill(Path(ellipseIn: node), with: .color(tint))
-            }
-            context.stroke(lines, with: .color(AEColor.azure.opacity(0.19)), lineWidth: 0.8)
+            renderNetwork(into: &context, canvasSize: canvasSize, time: time)
         }
+    }
+
+    private func renderNetwork(
+        into context: inout GraphicsContext,
+        canvasSize: CGSize,
+        time: TimeInterval
+    ) {
+        let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
+        let count = 11
+        var lines = Path()
+
+        for index in 0..<count {
+            let angle = Double(index) / Double(count) * .pi * 2 + time * 0.06
+            let radius: CGFloat = size * (index.isMultiple(of: 3) ? 0.34 : 0.27)
+            let point = CGPoint(
+                x: center.x + CGFloat(cos(angle)) * radius,
+                y: center.y + CGFloat(sin(angle)) * radius
+            )
+            lines.move(to: center)
+            lines.addLine(to: point)
+
+            let pulse: CGFloat = 2.4 + CGFloat(sin(time * 2.1 + Double(index))) * 0.9
+            let node = CGRect(
+                x: point.x - pulse,
+                y: point.y - pulse,
+                width: pulse * 2,
+                height: pulse * 2
+            )
+            let tint = index.isMultiple(of: 2) ? AEColor.signal : AEColor.azure
+            context.fill(Path(ellipseIn: node), with: .color(tint))
+        }
+
+        context.stroke(lines, with: .color(AEColor.azure.opacity(0.19)), lineWidth: 0.8)
     }
 
     private var coreMark: some View {
