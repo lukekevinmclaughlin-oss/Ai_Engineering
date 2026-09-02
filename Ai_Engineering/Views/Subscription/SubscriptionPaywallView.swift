@@ -1,3 +1,4 @@
+import EngineeringShared
 #if DIRECT_DISTRIBUTION
 import SwiftUI
 
@@ -341,53 +342,106 @@ private struct TrialNeuralCoreView: View {
 
     var body: some View {
         TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: reduceMotion)) { timeline in
-            let time = reduceMotion ? 0.5 : timeline.date.timeIntervalSinceReferenceDate
-            ZStack {
-                Circle()
-                    .fill(RadialGradient(colors: [AEColor.violet.opacity(0.36), AEColor.azure.opacity(0.12), .clear], center: .center, startRadius: 0, endRadius: size * 0.52))
-                    .blur(radius: 8)
-
-                ForEach(0..<3, id: \.self) { ring in
-                    Circle()
-                        .trim(from: CGFloat(ring) * 0.08, to: 0.66 + CGFloat(ring) * 0.09)
-                        .stroke(
-                            ring == 0 ? AEColor.signal : (ring == 1 ? AEColor.azure : AEColor.violet),
-                            style: StrokeStyle(lineWidth: ring == 0 ? 2.5 : 1.25, lineCap: .round, dash: ring == 2 ? [5, 8] : [])
-                        )
-                        .frame(width: size * (0.50 + CGFloat(ring) * 0.18), height: size * (0.50 + CGFloat(ring) * 0.18))
-                        .rotationEffect(.degrees((ring.isMultiple(of: 2) ? 1 : -1) * time * (10 + Double(ring) * 5)))
-                }
-
-                Canvas { context, canvasSize in
-                    let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
-                    let count = 11
-                    var lines = Path()
-                    for index in 0..<count {
-                        let angle = Double(index) / Double(count) * .pi * 2 + time * 0.06
-                        let radius = size * (index.isMultiple(of: 3) ? 0.34 : 0.27)
-                        let point = CGPoint(x: center.x + cos(angle) * radius, y: center.y + sin(angle) * radius)
-                        lines.move(to: center)
-                        lines.addLine(to: point)
-                        let pulse = 2.4 + sin(time * 2.1 + Double(index)) * 0.9
-                        let node = CGRect(x: point.x - pulse, y: point.y - pulse, width: pulse * 2, height: pulse * 2)
-                        context.fill(Path(ellipseIn: node), with: .color(index.isMultiple(of: 2) ? AEColor.signal : AEColor.azure))
-                    }
-                    context.stroke(lines, with: .color(AEColor.azure.opacity(0.19)), lineWidth: 0.8)
-                }
-
-                Circle()
-                    .fill(AEGradient.signal)
-                    .frame(width: size * 0.28, height: size * 0.28)
-                    .overlay {
-                        Text("AI")
-                            .font(.system(size: size * 0.095, weight: .black, design: .rounded))
-                            .foregroundStyle(Color(red: 0.02, green: 0.07, blue: 0.10))
-                    }
-                    .aeGlow(color: AEColor.signal, radius: 22, intensity: 1)
-            }
-            .frame(width: size, height: size)
+            neuralCore(at: reduceMotion ? 0.5 : timeline.date.timeIntervalSinceReferenceDate)
         }
         .accessibilityHidden(true)
+    }
+
+    private func neuralCore(at time: TimeInterval) -> some View {
+        ZStack {
+            backgroundGlow
+            rotatingRings(at: time)
+            neuralNetwork(at: time)
+            coreMark
+        }
+        .frame(width: size, height: size)
+    }
+
+    private var backgroundGlow: some View {
+        Circle()
+            .fill(
+                RadialGradient(
+                    colors: [AEColor.violet.opacity(0.36), AEColor.azure.opacity(0.12), .clear],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: size * 0.52
+                )
+            )
+            .blur(radius: 8)
+    }
+
+    @ViewBuilder
+    private func rotatingRings(at time: TimeInterval) -> some View {
+        ForEach(0..<3, id: \.self) { ring in
+            let scale = 0.50 + CGFloat(ring) * 0.18
+            let tint = ring == 0 ? AEColor.signal : (ring == 1 ? AEColor.azure : AEColor.violet)
+            let lineWidth: CGFloat = ring == 0 ? 2.5 : 1.25
+            Circle()
+                .trim(from: CGFloat(ring) * 0.08, to: 0.66 + CGFloat(ring) * 0.09)
+                .stroke(
+                    tint,
+                    style: StrokeStyle(
+                        lineWidth: lineWidth,
+                        lineCap: .round,
+                        dash: ring == 2 ? [5, 8] : []
+                    )
+                )
+                .frame(width: size * scale, height: size * scale)
+                .rotationEffect(
+                    .degrees((ring.isMultiple(of: 2) ? 1 : -1) * time * (10 + Double(ring) * 5))
+                )
+        }
+    }
+
+    private func neuralNetwork(at time: TimeInterval) -> some View {
+        Canvas { context, canvasSize in
+            renderNetwork(into: &context, canvasSize: canvasSize, time: time)
+        }
+    }
+
+    private func renderNetwork(
+        into context: inout GraphicsContext,
+        canvasSize: CGSize,
+        time: TimeInterval
+    ) {
+        let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
+        let count = 11
+        var lines = Path()
+
+        for index in 0..<count {
+            let angle = Double(index) / Double(count) * .pi * 2 + time * 0.06
+            let radius: CGFloat = size * (index.isMultiple(of: 3) ? 0.34 : 0.27)
+            let point = CGPoint(
+                x: center.x + CGFloat(cos(angle)) * radius,
+                y: center.y + CGFloat(sin(angle)) * radius
+            )
+            lines.move(to: center)
+            lines.addLine(to: point)
+
+            let pulse: CGFloat = 2.4 + CGFloat(sin(time * 2.1 + Double(index))) * 0.9
+            let node = CGRect(
+                x: point.x - pulse,
+                y: point.y - pulse,
+                width: pulse * 2,
+                height: pulse * 2
+            )
+            let tint = index.isMultiple(of: 2) ? AEColor.signal : AEColor.azure
+            context.fill(Path(ellipseIn: node), with: .color(tint))
+        }
+
+        context.stroke(lines, with: .color(AEColor.azure.opacity(0.19)), lineWidth: 0.8)
+    }
+
+    private var coreMark: some View {
+        Circle()
+            .fill(AEGradient.signal)
+            .frame(width: size * 0.28, height: size * 0.28)
+            .overlay {
+                Text("AI")
+                    .font(.system(size: size * 0.095, weight: .black, design: .rounded))
+                    .foregroundStyle(Color(red: 0.02, green: 0.07, blue: 0.10))
+            }
+            .aeGlow(color: AEColor.signal, radius: 22, intensity: 1)
     }
 }
 

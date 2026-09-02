@@ -1,7 +1,7 @@
 import Foundation
 
-enum CurriculumStore {
-    static func load(bundle: Bundle = .main) -> Curriculum {
+public enum CurriculumStore {
+    public static func load(bundle: Bundle = .main) -> Curriculum {
         guard let url = bundle.url(forResource: "curriculum", withExtension: "json") else {
             assertionFailure("curriculum.json is missing from the app bundle")
             return Curriculum(courses: [])

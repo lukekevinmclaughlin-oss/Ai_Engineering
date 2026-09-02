@@ -1,3 +1,4 @@
+import EngineeringShared
 import SwiftUI
 
 /// A normalized snapshot of the learner's work that can drive every AI assembly treatment.

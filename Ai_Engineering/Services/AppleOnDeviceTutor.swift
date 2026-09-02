@@ -1,3 +1,4 @@
+import EngineeringShared
 import Foundation
 
 #if canImport(FoundationModels)

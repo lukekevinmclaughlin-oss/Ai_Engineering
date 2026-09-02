@@ -1,28 +1,53 @@
 import Combine
 import Foundation
 
-struct LearnerProgress: Codable, Equatable {
-    var completedLessonIDs: Set<String> = []
-    var completedMilestoneIDs: Set<String> = []
-    var bookmarkedCourseIDs: Set<String> = []
-    var recentLessonIDs: [String] = []
-    var skillXP: [String: Int] = [:]
-    var dailyXP: [String: Int] = [:]
-    var totalXP = 0
-    var streak = 0
-    var lastActivityDay: String?
-    var dailyGoal = 100
+public struct LearnerProgress: Codable, Equatable {
+    public var completedLessonIDs: Set<String> = []
+    public var completedMilestoneIDs: Set<String> = []
+    public var bookmarkedCourseIDs: Set<String> = []
+    public var recentLessonIDs: [String] = []
+    public var skillXP: [String: Int] = [:]
+    public var dailyXP: [String: Int] = [:]
+    public var totalXP = 0
+    public var streak = 0
+    public var lastActivityDay: String?
+    public var dailyGoal = 100
+
+
+    public init(
+        completedLessonIDs: Set<String> = [],
+        completedMilestoneIDs: Set<String> = [],
+        bookmarkedCourseIDs: Set<String> = [],
+        recentLessonIDs: [String] = [],
+        skillXP: [String: Int] = [:],
+        dailyXP: [String: Int] = [:],
+        totalXP: Int = 0,
+        streak: Int = 0,
+        lastActivityDay: String? = nil,
+        dailyGoal: Int = 100
+    ) {
+        self.completedLessonIDs = completedLessonIDs
+        self.completedMilestoneIDs = completedMilestoneIDs
+        self.bookmarkedCourseIDs = bookmarkedCourseIDs
+        self.recentLessonIDs = recentLessonIDs
+        self.skillXP = skillXP
+        self.dailyXP = dailyXP
+        self.totalXP = totalXP
+        self.streak = streak
+        self.lastActivityDay = lastActivityDay
+        self.dailyGoal = dailyGoal
+    }
 }
 
 @MainActor
-final class ProgressStore: ObservableObject {
-    @Published private(set) var value: LearnerProgress
+public final class ProgressStore: ObservableObject {
+    @Published public private(set) var value: LearnerProgress
 
     private let defaults: UserDefaults
     private let storageKey: String
     private let calendar: Calendar
 
-    init(
+    public init(
         defaults: UserDefaults = .standard,
         storageKey: String = "ai-engineering.learner-progress.v1",
         calendar: Calendar = .autoupdatingCurrent
@@ -39,40 +64,40 @@ final class ProgressStore: ObservableObject {
         }
     }
 
-    var totalXP: Int { value.totalXP }
-    var streak: Int { value.streak }
-    var dailyGoal: Int { value.dailyGoal }
-    var completedLessonCount: Int { value.completedLessonIDs.count }
-    var todayXP: Int { value.dailyXP[dayKey(for: Date()), default: 0] }
-    var dailyProgress: Double { min(Double(todayXP) / Double(max(dailyGoal, 1)), 1) }
+    public var totalXP: Int { value.totalXP }
+    public var streak: Int { value.streak }
+    public var dailyGoal: Int { value.dailyGoal }
+    public var completedLessonCount: Int { value.completedLessonIDs.count }
+    public var todayXP: Int { value.dailyXP[dayKey(for: Date()), default: 0] }
+    public var dailyProgress: Double { min(Double(todayXP) / Double(max(dailyGoal, 1)), 1) }
 
-    func isCompleted(_ lesson: Lesson) -> Bool {
+    public func isCompleted(_ lesson: Lesson) -> Bool {
         value.completedLessonIDs.contains(lesson.id)
     }
 
-    func isMilestoneCompleted(_ milestone: ProjectMilestone, in project: LabProject) -> Bool {
+    public func isMilestoneCompleted(_ milestone: ProjectMilestone, in project: LabProject) -> Bool {
         value.completedMilestoneIDs.contains(milestone.progressID(projectID: project.id))
     }
 
-    func isBookmarked(_ course: Course) -> Bool {
+    public func isBookmarked(_ course: Course) -> Bool {
         value.bookmarkedCourseIDs.contains(course.id)
     }
 
-    func courseProgress(_ course: Course) -> Double {
+    public func courseProgress(_ course: Course) -> Double {
         guard !course.lessons.isEmpty else { return 0 }
         let completed = course.lessons.filter { value.completedLessonIDs.contains($0.id) }.count
         return Double(completed) / Double(course.lessons.count)
     }
 
-    func completedLessons(in module: LearningModule) -> Int {
+    public func completedLessons(in module: LearningModule) -> Int {
         module.lessons.filter { value.completedLessonIDs.contains($0.id) }.count
     }
 
-    func nextLesson(in course: Course) -> Lesson? {
+    public func nextLesson(in course: Course) -> Lesson? {
         course.lessons.first { !value.completedLessonIDs.contains($0.id) } ?? course.lessons.first
     }
 
-    func complete(_ lesson: Lesson, in course: Course) {
+    public func complete(_ lesson: Lesson, in course: Course) {
         guard !value.completedLessonIDs.contains(lesson.id) else {
             touchRecent(lesson.id)
             return
@@ -90,7 +115,7 @@ final class ProgressStore: ObservableObject {
         persist()
     }
 
-    func toggleMilestone(_ milestone: ProjectMilestone, in project: LabProject) {
+    public func toggleMilestone(_ milestone: ProjectMilestone, in project: LabProject) {
         let progressID = milestone.progressID(projectID: project.id)
         if value.completedMilestoneIDs.contains(progressID) {
             value.completedMilestoneIDs.remove(progressID)
@@ -103,7 +128,7 @@ final class ProgressStore: ObservableObject {
     /// Upgrades progress written by early builds, where milestone IDs were not
     /// scoped to their project. A legacy ID is expanded to every catalog match,
     /// preserving what the learner previously saw as completed.
-    func migrateLegacyMilestoneIDs(projects: [LabProject]) {
+    public func migrateLegacyMilestoneIDs(projects: [LabProject]) {
         let legacyIDs = value.completedMilestoneIDs.filter { !$0.contains("::") }
         guard !legacyIDs.isEmpty else { return }
 
@@ -128,7 +153,7 @@ final class ProgressStore: ObservableObject {
         persist()
     }
 
-    func toggleBookmark(_ course: Course) {
+    public func toggleBookmark(_ course: Course) {
         if value.bookmarkedCourseIDs.contains(course.id) {
             value.bookmarkedCourseIDs.remove(course.id)
         } else {
@@ -137,19 +162,19 @@ final class ProgressStore: ObservableObject {
         persist()
     }
 
-    func setDailyGoal(_ goal: Int) {
+    public func setDailyGoal(_ goal: Int) {
         value.dailyGoal = max(20, min(goal, 500))
         persist()
     }
 
-    func activityForLastSevenDays(now: Date = Date()) -> [Int] {
+    public func activityForLastSevenDays(now: Date = Date()) -> [Int] {
         (0..<7).reversed().map { offset in
             let date = calendar.date(byAdding: .day, value: -offset, to: now) ?? now
             return value.dailyXP[dayKey(for: date), default: 0]
         }
     }
 
-    func reset() {
+    public func reset() {
         value = LearnerProgress()
         persist()
     }

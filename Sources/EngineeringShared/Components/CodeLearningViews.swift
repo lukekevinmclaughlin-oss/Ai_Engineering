@@ -6,13 +6,13 @@ import UIKit
 import AppKit
 #endif
 
-struct AESyntaxCodeBlock: View {
-    let code: String
-    let language: CodeLanguage
-    var title: String? = nil
-    var accent: Color = AEColor.azure
-    var labelAccent: Color? = nil
-    var showsCopyButton = true
+public struct AESyntaxCodeBlock: View {
+    public let code: String
+    public let language: CodeLanguage
+    public var title: String? = nil
+    public var accent: Color = AEColor.azure
+    public var labelAccent: Color? = nil
+    public var showsCopyButton = true
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -26,7 +26,7 @@ struct AESyntaxCodeBlock: View {
         min(max(CGFloat(lineCount) * (fontSize + 7) + 28, 86), 380)
     }
 
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             codeToolbar
 
@@ -135,16 +135,33 @@ struct AESyntaxCodeBlock: View {
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) { didCopy = false }
         }
     }
+
+
+    public init(
+        code: String,
+        language: CodeLanguage,
+        title: String? = nil,
+        accent: Color = AEColor.azure,
+        labelAccent: Color? = nil,
+        showsCopyButton: Bool = true
+    ) {
+        self.code = code
+        self.language = language
+        self.title = title
+        self.accent = accent
+        self.labelAccent = labelAccent
+        self.showsCopyButton = showsCopyButton
+    }
 }
 
-struct AESyntaxCodeEditor: View {
-    @Binding var text: String
-    let language: CodeLanguage
-    let fileName: String
-    var accent: Color = AEColor.azure
-    var labelAccent: Color? = nil
-    var minHeight: CGFloat = 260
-    var isRunning = false
+public struct AESyntaxCodeEditor: View {
+    @Binding public var text: String
+    public let language: CodeLanguage
+    public let fileName: String
+    public var accent: Color = AEColor.azure
+    public var labelAccent: Color? = nil
+    public var minHeight: CGFloat = 260
+    public var isRunning = false
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -153,7 +170,7 @@ struct AESyntaxCodeEditor: View {
     private var palette: SyntaxPalette { SyntaxPalette(scheme: colorScheme) }
     private var lineCount: Int { max(text.components(separatedBy: .newlines).count, 1) }
 
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 10) {
                 HStack(spacing: 6) {
@@ -215,20 +232,39 @@ struct AESyntaxCodeEditor: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Editable \(language.title) workspace, \(fileName)")
     }
+
+
+    public init(
+        text: Binding<String>,
+        language: CodeLanguage,
+        fileName: String,
+        accent: Color = AEColor.azure,
+        labelAccent: Color? = nil,
+        minHeight: CGFloat = 260,
+        isRunning: Bool = false
+    ) {
+        self._text = text
+        self.language = language
+        self.fileName = fileName
+        self.accent = accent
+        self.labelAccent = labelAccent
+        self.minHeight = minHeight
+        self.isRunning = isRunning
+    }
 }
 
-struct AECodeConsole: View {
-    let lines: [String]
-    var accent: Color = AEColor.signal
-    var labelAccent: Color? = nil
-    var isRunning = false
+public struct AECodeConsole: View {
+    public let lines: [String]
+    public var accent: Color = AEColor.signal
+    public var labelAccent: Color? = nil
+    public var isRunning = false
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var palette: SyntaxPalette { SyntaxPalette(scheme: colorScheme) }
 
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Label("VALIDATION OUTPUT", systemImage: "terminal.fill")
@@ -289,6 +325,19 @@ struct AECodeConsole: View {
             return AEColor.amber
         }
         return labelAccent ?? accent
+    }
+
+
+    public init(
+        lines: [String],
+        accent: Color = AEColor.signal,
+        labelAccent: Color? = nil,
+        isRunning: Bool = false
+    ) {
+        self.lines = lines
+        self.accent = accent
+        self.labelAccent = labelAccent
+        self.isRunning = isRunning
     }
 }
 

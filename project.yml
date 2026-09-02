@@ -20,12 +20,16 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.9"
-    MARKETING_VERSION: "1.1.2"
-    CURRENT_PROJECT_VERSION: "204"
+    MARKETING_VERSION: "1.1.3"
+    CURRENT_PROJECT_VERSION: "205"
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: 24UCS53598
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     SWIFT_STRICT_CONCURRENCY: complete
+
+packages:
+  EngineeringShared:
+    path: .
 
 targets:
   Ai_Engineering:
@@ -43,6 +47,8 @@ targets:
           - Resources/**
       - path: Ai_Engineering/Resources
         buildPhase: resources
+    dependencies:
+      - package: EngineeringShared
     settings:
       base:
         PRODUCT_NAME: Ai_Engineering
@@ -91,6 +97,7 @@ targets:
       - path: Ai_EngineeringTests
     dependencies:
       - target: Ai_Engineering
+      - package: EngineeringShared
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.lukemclaughlin.aiengineering.tests

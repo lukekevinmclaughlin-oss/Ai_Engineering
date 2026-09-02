@@ -234,7 +234,7 @@ private struct AEGlassSurfaceModifier: ViewModifier {
 }
 
 public extension View {
-    func aeGlow(
+    public func aeGlow(
         color: Color = AEColor.signal,
         radius: CGFloat = 18,
         intensity: Double = 1
@@ -242,7 +242,7 @@ public extension View {
         modifier(AEGlowModifier(color: color, radius: radius, intensity: intensity))
     }
 
-    func aeGlassSurface(
+    public func aeGlassSurface(
         cornerRadius: CGFloat = AERadius.large,
         tint: Color? = nil,
         borderOpacity: Double = 0.18

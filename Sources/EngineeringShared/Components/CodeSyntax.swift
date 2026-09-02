@@ -3,15 +3,15 @@ import SwiftUI
 
 #if os(iOS)
 import UIKit
-typealias AEPlatformColor = UIColor
-typealias AEPlatformFont = UIFont
+public typealias AEPlatformColor = UIColor
+public typealias AEPlatformFont = UIFont
 #elseif os(macOS)
 import AppKit
-typealias AEPlatformColor = NSColor
-typealias AEPlatformFont = NSFont
+public typealias AEPlatformColor = NSColor
+public typealias AEPlatformFont = NSFont
 #endif
 
-enum CodeLanguage: String, CaseIterable, Sendable {
+public enum CodeLanguage: String, CaseIterable, Sendable {
     case python
     case swift
     case json
@@ -21,7 +21,7 @@ enum CodeLanguage: String, CaseIterable, Sendable {
     case markdown
     case generic
 
-    init(_ label: String?, fileName: String? = nil) {
+    public init(_ label: String?, fileName: String? = nil) {
         let normalized = label?.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         switch normalized {
         case "py", "python", "python3": self = .python
@@ -45,7 +45,7 @@ enum CodeLanguage: String, CaseIterable, Sendable {
         }
     }
 
-    var title: String {
+    public var title: String {
         switch self {
         case .python: "Python"
         case .swift: "Swift"
@@ -58,7 +58,7 @@ enum CodeLanguage: String, CaseIterable, Sendable {
         }
     }
 
-    var systemImage: String {
+    public var systemImage: String {
         switch self {
         case .python: "chevron.left.forwardslash.chevron.right"
         case .swift: "swift"
@@ -71,7 +71,7 @@ enum CodeLanguage: String, CaseIterable, Sendable {
         }
     }
 
-    var preferredFileName: String {
+    public var preferredFileName: String {
         switch self {
         case .python: "example.py"
         case .swift: "Example.swift"
@@ -84,7 +84,7 @@ enum CodeLanguage: String, CaseIterable, Sendable {
         }
     }
 
-    static func inferred(from source: String, hint: String? = nil, fileName: String? = nil) -> CodeLanguage {
+    public static func inferred(from source: String, hint: String? = nil, fileName: String? = nil) -> CodeLanguage {
         let hinted = CodeLanguage(hint, fileName: fileName)
         if hinted != .generic { return hinted }
 
@@ -115,7 +115,7 @@ enum CodeLanguage: String, CaseIterable, Sendable {
     }
 }
 
-enum SyntaxTokenKind: String, CaseIterable, Sendable {
+public enum SyntaxTokenKind: String, CaseIterable, Sendable {
     case comment
     case string
     case number
@@ -128,20 +128,27 @@ enum SyntaxTokenKind: String, CaseIterable, Sendable {
     case `operator`
 }
 
-struct SyntaxToken: Equatable, Sendable {
-    let location: Int
-    let length: Int
-    let kind: SyntaxTokenKind
+public struct SyntaxToken: Equatable, Sendable {
+    public let location: Int
+    public let length: Int
+    public let kind: SyntaxTokenKind
 
-    var range: NSRange { NSRange(location: location, length: length) }
+    public var range: NSRange { NSRange(location: location, length: length) }
+
+
+    public init(location: Int, length: Int, kind: SyntaxTokenKind) {
+        self.location = location
+        self.length = length
+        self.kind = kind
+    }
 }
 
 /// A compact lexer intended for instructional snippets and local workspaces.
 /// A combined expression makes token precedence deterministic: a `#` inside a
 /// quoted string is parsed as part of that string, while quotes after a comment
 /// marker remain part of the comment.
-enum SyntaxHighlighter {
-    static func tokens(in source: String, language: CodeLanguage) -> [SyntaxToken] {
+public enum SyntaxHighlighter {
+    public static func tokens(in source: String, language: CodeLanguage) -> [SyntaxToken] {
         guard !source.isEmpty,
               let expression = try? NSRegularExpression(pattern: pattern(for: language)) else {
             return []
@@ -268,40 +275,47 @@ enum SyntaxHighlighter {
     }
 }
 
-struct SyntaxRGB {
-    let red: Double
-    let green: Double
-    let blue: Double
+public struct SyntaxRGB {
+    public let red: Double
+    public let green: Double
+    public let blue: Double
 
-    var color: Color { Color(red: red, green: green, blue: blue) }
+    public var color: Color { Color(red: red, green: green, blue: blue) }
 
-    var platformColor: AEPlatformColor {
+    public var platformColor: AEPlatformColor {
         #if os(iOS)
         UIColor(red: red, green: green, blue: blue, alpha: 1)
         #else
         NSColor(srgbRed: red, green: green, blue: blue, alpha: 1)
         #endif
     }
+
+
+    public init(red: Double, green: Double, blue: Double) {
+        self.red = red
+        self.green = green
+        self.blue = blue
+    }
 }
 
-struct SyntaxPalette {
-    let background: SyntaxRGB
-    let toolbar: SyntaxRGB
-    let gutter: SyntaxRGB
-    let base: SyntaxRGB
-    let muted: SyntaxRGB
-    let comment: SyntaxRGB
-    let string: SyntaxRGB
-    let number: SyntaxRGB
-    let keyword: SyntaxRGB
-    let type: SyntaxRGB
-    let function: SyntaxRGB
-    let key: SyntaxRGB
-    let constant: SyntaxRGB
-    let variable: SyntaxRGB
-    let `operator`: SyntaxRGB
+public struct SyntaxPalette {
+    public let background: SyntaxRGB
+    public let toolbar: SyntaxRGB
+    public let gutter: SyntaxRGB
+    public let base: SyntaxRGB
+    public let muted: SyntaxRGB
+    public let comment: SyntaxRGB
+    public let string: SyntaxRGB
+    public let number: SyntaxRGB
+    public let keyword: SyntaxRGB
+    public let type: SyntaxRGB
+    public let function: SyntaxRGB
+    public let key: SyntaxRGB
+    public let constant: SyntaxRGB
+    public let variable: SyntaxRGB
+    public let `operator`: SyntaxRGB
 
-    init(scheme: ColorScheme) {
+    public init(scheme: ColorScheme) {
         if scheme == .dark {
             background = .init(red: 0.026, green: 0.038, blue: 0.074)
             toolbar = .init(red: 0.045, green: 0.061, blue: 0.108)
@@ -337,7 +351,7 @@ struct SyntaxPalette {
         }
     }
 
-    func color(for kind: SyntaxTokenKind) -> SyntaxRGB {
+    public func color(for kind: SyntaxTokenKind) -> SyntaxRGB {
         switch kind {
         case .comment: comment
         case .string: string
@@ -353,8 +367,8 @@ struct SyntaxPalette {
     }
 }
 
-extension SyntaxHighlighter {
-    static func attributedText(
+public extension SyntaxHighlighter {
+    public static func attributedText(
         _ source: String,
         language: CodeLanguage,
         scheme: ColorScheme,
@@ -394,8 +408,8 @@ extension SyntaxHighlighter {
     }
 }
 
-enum CodeFontMetrics {
-    static func size(for dynamicTypeSize: DynamicTypeSize) -> CGFloat {
+public enum CodeFontMetrics {
+    public static func size(for dynamicTypeSize: DynamicTypeSize) -> CGFloat {
         switch dynamicTypeSize {
         case .xSmall: 12
         case .small: 12.5

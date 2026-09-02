@@ -1,19 +1,19 @@
 import Foundation
 
-enum TutorMessageRole: String, Codable, Sendable {
+public enum TutorMessageRole: String, Codable, Sendable {
     case user
     case tutor
 }
 
-struct TutorMessage: Identifiable, Codable, Equatable, Sendable {
-    let id: UUID
-    let role: TutorMessageRole
-    let content: String
-    let createdAt: Date
-    let engineName: String?
-    let sources: [TutorSource]
+public struct TutorMessage: Identifiable, Codable, Equatable, Sendable {
+    public let id: UUID
+    public let role: TutorMessageRole
+    public let content: String
+    public let createdAt: Date
+    public let engineName: String?
+    public let sources: [TutorSource]
 
-    init(
+    public init(
         id: UUID = UUID(),
         role: TutorMessageRole,
         content: String,
@@ -30,21 +30,28 @@ struct TutorMessage: Identifiable, Codable, Equatable, Sendable {
     }
 }
 
-struct TutorSource: Identifiable, Codable, Equatable, Hashable, Sendable {
-    let id: String
-    let title: String
-    let location: String
+public struct TutorSource: Identifiable, Codable, Equatable, Hashable, Sendable {
+    public let id: String
+    public let title: String
+    public let location: String
+
+
+    public init(id: String, title: String, location: String) {
+        self.id = id
+        self.title = title
+        self.location = location
+    }
 }
 
-struct TutorContext: Codable, Equatable, Hashable, Sendable {
-    let courseID: String?
-    let courseTitle: String?
-    let lessonID: String?
-    let lessonTitle: String?
-    let projectID: String?
-    let projectTitle: String?
+public struct TutorContext: Codable, Equatable, Hashable, Sendable {
+    public let courseID: String?
+    public let courseTitle: String?
+    public let lessonID: String?
+    public let lessonTitle: String?
+    public let projectID: String?
+    public let projectTitle: String?
 
-    static let general = TutorContext(
+    public static let general = TutorContext(
         courseID: nil,
         courseTitle: nil,
         lessonID: nil,
@@ -53,7 +60,7 @@ struct TutorContext: Codable, Equatable, Hashable, Sendable {
         projectTitle: nil
     )
 
-    static func lesson(_ lesson: Lesson, in course: Course) -> TutorContext {
+    public static func lesson(_ lesson: Lesson, in course: Course) -> TutorContext {
         TutorContext(
             courseID: course.id,
             courseTitle: course.title,
@@ -64,7 +71,7 @@ struct TutorContext: Codable, Equatable, Hashable, Sendable {
         )
     }
 
-    static func project(_ project: LabProject) -> TutorContext {
+    public static func project(_ project: LabProject) -> TutorContext {
         TutorContext(
             courseID: nil,
             courseTitle: nil,
@@ -75,32 +82,49 @@ struct TutorContext: Codable, Equatable, Hashable, Sendable {
         )
     }
 
-    var isGeneral: Bool {
+    public var isGeneral: Bool {
         lessonID == nil && projectID == nil
     }
 
-    var displayTitle: String {
+    public var displayTitle: String {
         if let lessonTitle { return lessonTitle }
         if let projectTitle { return projectTitle }
         return "Whole curriculum"
     }
 
-    var subtitle: String {
+    public var subtitle: String {
         if let courseTitle { return courseTitle }
         if projectID != nil { return "Portfolio project" }
         return "40 courses · 400 lessons"
     }
+
+
+    public init(
+        courseID: String? = nil,
+        courseTitle: String? = nil,
+        lessonID: String? = nil,
+        lessonTitle: String? = nil,
+        projectID: String? = nil,
+        projectTitle: String? = nil
+    ) {
+        self.courseID = courseID
+        self.courseTitle = courseTitle
+        self.lessonID = lessonID
+        self.lessonTitle = lessonTitle
+        self.projectID = projectID
+        self.projectTitle = projectTitle
+    }
 }
 
-enum TutorEngineChoice: String, Codable, CaseIterable, Identifiable, Sendable {
+public enum TutorEngineChoice: String, Codable, CaseIterable, Identifiable, Sendable {
     case automatic
     case offlineCore
     case appleOnDevice
     case connectedProvider
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var title: String {
+    public var title: String {
         switch self {
         case .automatic: "Automatic"
         case .offlineCore: "Offline Core"
@@ -109,7 +133,7 @@ enum TutorEngineChoice: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    var detail: String {
+    public var detail: String {
         switch self {
         case .automatic: "Use the best private engine currently available."
         case .offlineCore: "Bundled curriculum retrieval; never uses a network."
@@ -118,7 +142,7 @@ enum TutorEngineChoice: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    var systemImage: String {
+    public var systemImage: String {
         switch self {
         case .automatic: "wand.and.stars"
         case .offlineCore: "internaldrive.fill"
@@ -128,14 +152,14 @@ enum TutorEngineChoice: String, Codable, CaseIterable, Identifiable, Sendable {
     }
 }
 
-enum TutorLearnerLevel: String, Codable, CaseIterable, Identifiable, Sendable {
+public enum TutorLearnerLevel: String, Codable, CaseIterable, Identifiable, Sendable {
     case firstSteps
     case guided
     case engineer
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var title: String {
+    public var title: String {
         switch self {
         case .firstSteps: "First steps"
         case .guided: "Guided"
@@ -143,7 +167,7 @@ enum TutorLearnerLevel: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    var instruction: String {
+    public var instruction: String {
         switch self {
         case .firstSteps:
             "Assume only basic arithmetic. Define every technical term, use a familiar analogy, and take one small step at a time."
@@ -155,20 +179,20 @@ enum TutorLearnerLevel: String, Codable, CaseIterable, Identifiable, Sendable {
     }
 }
 
-enum TutorAnswerDepth: String, Codable, CaseIterable, Identifiable, Sendable {
+public enum TutorAnswerDepth: String, Codable, CaseIterable, Identifiable, Sendable {
     case focused
     case deepDive
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var title: String {
+    public var title: String {
         switch self {
         case .focused: "Focused"
         case .deepDive: "Deep dive"
         }
     }
 
-    var instruction: String {
+    public var instruction: String {
         switch self {
         case .focused: "Answer in roughly four concise sections."
         case .deepDive: "Teach in depth: intuition, mechanics, example, trade-offs, failure modes, and a check for understanding."
@@ -176,26 +200,37 @@ enum TutorAnswerDepth: String, Codable, CaseIterable, Identifiable, Sendable {
     }
 }
 
-struct TutorPreferences: Codable, Equatable, Sendable {
-    var engine: TutorEngineChoice = .automatic
-    var learnerLevel: TutorLearnerLevel = .firstSteps
-    var answerDepth: TutorAnswerDepth = .deepDive
+public struct TutorPreferences: Codable, Equatable, Sendable {
+    public var engine: TutorEngineChoice = .automatic
+    public var learnerLevel: TutorLearnerLevel = .firstSteps
+    public var answerDepth: TutorAnswerDepth = .deepDive
+
+
+    public init(
+        engine: TutorEngineChoice = .automatic,
+        learnerLevel: TutorLearnerLevel = .firstSteps,
+        answerDepth: TutorAnswerDepth = .deepDive
+    ) {
+        self.engine = engine
+        self.learnerLevel = learnerLevel
+        self.answerDepth = answerDepth
+    }
 }
 
-enum TutorConnectionMode: String, Codable, CaseIterable, Identifiable, Sendable {
+public enum TutorConnectionMode: String, Codable, CaseIterable, Identifiable, Sendable {
     case apiProvider
     case localServer
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 }
 
-enum TutorProviderProtocol: String, Codable, Sendable {
+public enum TutorProviderProtocol: String, Codable, Sendable {
     case openAICompatible
     case anthropicMessages
     case geminiGenerateContent
 }
 
-enum TutorAPIProvider: String, Codable, CaseIterable, Identifiable, Sendable {
+public enum TutorAPIProvider: String, Codable, CaseIterable, Identifiable, Sendable {
     case openAI
     case anthropic
     case googleGemini
@@ -210,9 +245,9 @@ enum TutorAPIProvider: String, Codable, CaseIterable, Identifiable, Sendable {
     case cerebras
     case customOpenAICompatible
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var title: String {
+    public var title: String {
         switch self {
         case .openAI: "OpenAI"
         case .anthropic: "Anthropic"
@@ -230,7 +265,7 @@ enum TutorAPIProvider: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    var protocolFamily: TutorProviderProtocol {
+    public var protocolFamily: TutorProviderProtocol {
         switch self {
         case .anthropic: .anthropicMessages
         case .googleGemini: .geminiGenerateContent
@@ -238,7 +273,7 @@ enum TutorAPIProvider: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    var endpoint: String {
+    public var endpoint: String {
         switch self {
         case .openAI: "https://api.openai.com/v1/chat/completions"
         case .anthropic: "https://api.anthropic.com/v1/messages"
@@ -256,7 +291,7 @@ enum TutorAPIProvider: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    var modelPrompt: String {
+    public var modelPrompt: String {
         switch self {
         case .openAI: "gpt-5.5"
         case .anthropic: "claude-sonnet-4-6"
@@ -274,7 +309,7 @@ enum TutorAPIProvider: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    static func inferred(from endpoint: String) -> TutorAPIProvider {
+    public static func inferred(from endpoint: String) -> TutorAPIProvider {
         guard let host = URLComponents(string: endpoint)?.host?.lowercased() else {
             return .customOpenAICompatible
         }
@@ -294,34 +329,34 @@ enum TutorAPIProvider: String, Codable, CaseIterable, Identifiable, Sendable {
     }
 }
 
-enum TutorLocalServer: String, Codable, CaseIterable, Identifiable, Sendable {
+public enum TutorLocalServer: String, Codable, CaseIterable, Identifiable, Sendable {
     case ollama
     case lmStudio
 
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
-    var title: String {
+    public var title: String {
         switch self {
         case .ollama: "Ollama"
         case .lmStudio: "LM Studio"
         }
     }
 
-    var chatEndpoint: String {
+    public var chatEndpoint: String {
         switch self {
         case .ollama: "http://127.0.0.1:11434/v1/chat/completions"
         case .lmStudio: "http://127.0.0.1:1234/v1/chat/completions"
         }
     }
 
-    var discoveryEndpoint: String {
+    public var discoveryEndpoint: String {
         switch self {
         case .ollama: "http://127.0.0.1:11434/api/tags"
         case .lmStudio: "http://127.0.0.1:1234/v1/models"
         }
     }
 
-    static func inferred(from endpoint: String, displayName: String) -> TutorLocalServer? {
+    public static func inferred(from endpoint: String, displayName: String) -> TutorLocalServer? {
         let combined = "\(endpoint) \(displayName)".lowercased()
         if combined.contains(":11434") || combined.contains("ollama") { return .ollama }
         if combined.contains(":1234") || combined.contains("lm studio") { return .lmStudio }
@@ -329,16 +364,16 @@ enum TutorLocalServer: String, Codable, CaseIterable, Identifiable, Sendable {
     }
 }
 
-struct TutorProviderConfiguration: Codable, Equatable, Sendable {
-    var isEnabled: Bool
-    var displayName: String
-    var endpoint: String
-    var model: String
-    var connectionMode: TutorConnectionMode
-    var apiProvider: TutorAPIProvider
-    var localServer: TutorLocalServer
+public struct TutorProviderConfiguration: Codable, Equatable, Sendable {
+    public var isEnabled: Bool
+    public var displayName: String
+    public var endpoint: String
+    public var model: String
+    public var connectionMode: TutorConnectionMode
+    public var apiProvider: TutorAPIProvider
+    public var localServer: TutorLocalServer
 
-    init(
+    public init(
         isEnabled: Bool = false,
         displayName: String = TutorAPIProvider.openAI.title,
         endpoint: String = TutorAPIProvider.openAI.endpoint,
@@ -356,13 +391,13 @@ struct TutorProviderConfiguration: Codable, Equatable, Sendable {
         self.localServer = localServer
     }
 
-    var protocolFamily: TutorProviderProtocol {
+    public var protocolFamily: TutorProviderProtocol {
         connectionMode == .localServer ? .openAICompatible : apiProvider.protocolFamily
     }
 
-    var requiresCredential: Bool { connectionMode == .apiProvider }
+    public var requiresCredential: Bool { connectionMode == .apiProvider }
 
-    var endpointMatchesConnection: Bool {
+    public var endpointMatchesConnection: Bool {
         guard let endpointURL = try? TutorEndpointPolicy.validatedURL(endpoint) else { return false }
 
         switch connectionMode {
@@ -378,13 +413,13 @@ struct TutorProviderConfiguration: Codable, Equatable, Sendable {
         }
     }
 
-    var isConfigured: Bool {
+    public var isConfigured: Bool {
         isEnabled
             && endpointMatchesConnection
             && !model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    mutating func select(_ provider: TutorAPIProvider) {
+    public mutating func select(_ provider: TutorAPIProvider) {
         connectionMode = .apiProvider
         apiProvider = provider
         displayName = provider.title
@@ -392,7 +427,7 @@ struct TutorProviderConfiguration: Codable, Equatable, Sendable {
         isEnabled = false
     }
 
-    mutating func select(_ server: TutorLocalServer) {
+    public mutating func select(_ server: TutorLocalServer) {
         connectionMode = .localServer
         localServer = server
         displayName = "\(server.title) (local)"
@@ -405,7 +440,7 @@ struct TutorProviderConfiguration: Codable, Equatable, Sendable {
         case connectionMode, apiProvider, localServer
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         isEnabled = try values.decodeIfPresent(Bool.self, forKey: .isEnabled) ?? false
         displayName = try values.decodeIfPresent(String.self, forKey: .displayName) ?? ""
@@ -435,14 +470,14 @@ struct TutorProviderConfiguration: Codable, Equatable, Sendable {
     }
 }
 
-enum AppleTutorAvailability: Equatable, Sendable {
+public enum AppleTutorAvailability: Equatable, Sendable {
     case available
     case unsupportedOS
     case deviceNotEligible
     case intelligenceDisabled
     case modelPreparing
 
-    var title: String {
+    public var title: String {
         switch self {
         case .available: "Ready offline"
         case .unsupportedOS: "Requires iOS/macOS 26"
@@ -452,30 +487,56 @@ enum AppleTutorAvailability: Equatable, Sendable {
         }
     }
 
-    var isAvailable: Bool { self == .available }
+    public var isAvailable: Bool { self == .available }
 }
 
-struct TutorAnswer: Sendable {
-    let content: String
-    let engineName: String
-    let sources: [TutorSource]
+public struct TutorAnswer: Sendable {
+    public let content: String
+    public let engineName: String
+    public let sources: [TutorSource]
+
+
+    public init(content: String, engineName: String, sources: [TutorSource]) {
+        self.content = content
+        self.engineName = engineName
+        self.sources = sources
+    }
 }
 
-struct TutorKnowledgeDocument: Identifiable, Hashable, Sendable {
-    enum Kind: String, Sendable {
+public struct TutorKnowledgeDocument: Identifiable, Hashable, Sendable {
+    public enum Kind: String, Sendable {
         case lesson
         case project
     }
 
-    let id: String
-    let kind: Kind
-    let title: String
-    let location: String
-    let summary: String
-    let body: String
-    let keywords: [String]
+    public let id: String
+    public let kind: Kind
+    public let title: String
+    public let location: String
+    public let summary: String
+    public let body: String
+    public let keywords: [String]
 
-    var source: TutorSource {
+    public var source: TutorSource {
         TutorSource(id: id, title: title, location: location)
+    }
+
+
+    public init(
+        id: String,
+        kind: Kind,
+        title: String,
+        location: String,
+        summary: String,
+        body: String,
+        keywords: [String]
+    ) {
+        self.id = id
+        self.kind = kind
+        self.title = title
+        self.location = location
+        self.summary = summary
+        self.body = body
+        self.keywords = keywords
     }
 }

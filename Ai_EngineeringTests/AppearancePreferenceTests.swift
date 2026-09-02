@@ -1,3 +1,4 @@
+import EngineeringShared
 import XCTest
 import SwiftUI
 @testable import Ai_Engineering

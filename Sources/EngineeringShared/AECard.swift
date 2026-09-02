@@ -168,7 +168,7 @@ public struct AECardHeader<Accessory: View>: View {
 }
 
 public extension AECardHeader where Accessory == EmptyView {
-    init(
+    public init(
         title: String,
         subtitle: String? = nil,
         systemImage: String? = nil,
