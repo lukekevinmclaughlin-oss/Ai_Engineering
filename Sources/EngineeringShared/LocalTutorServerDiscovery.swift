@@ -1,19 +1,19 @@
 import Foundation
 
-struct TutorLocalServerDetection: Identifiable, Equatable, Sendable {
-    let server: TutorLocalServer
-    let endpoint: String
-    let models: [String]
+public struct TutorLocalServerDetection: Identifiable, Equatable, Sendable {
+    public let server: TutorLocalServer
+    public let endpoint: String
+    public let models: [String]
 
-    var id: String { server.id }
+    public var id: String { server.id }
 }
 
-enum LocalTutorServerDiscoveryError: LocalizedError {
+public enum LocalTutorServerDiscoveryError: LocalizedError {
     case unavailable(TutorLocalServer)
     case invalidResponse(TutorLocalServer)
     case noModels(TutorLocalServer)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case let .unavailable(server):
             "\(server.title) was not found on this device. Make sure its local server is running."
@@ -25,7 +25,7 @@ enum LocalTutorServerDiscoveryError: LocalizedError {
     }
 }
 
-enum LocalTutorServerDiscovery {
+public enum LocalTutorServerDiscovery {
     private static let maximumResponseBytes = 1_000_000
 
     private struct OllamaResponse: Decodable {
@@ -41,7 +41,7 @@ enum LocalTutorServerDiscovery {
         let data: [Model]
     }
 
-    static func detect(_ server: TutorLocalServer) async throws -> TutorLocalServerDetection {
+    public static func detect(_ server: TutorLocalServer) async throws -> TutorLocalServerDetection {
         guard let url = URL(string: server.discoveryEndpoint) else {
             throw LocalTutorServerDiscoveryError.invalidResponse(server)
         }
@@ -90,7 +90,7 @@ enum LocalTutorServerDiscovery {
         return TutorLocalServerDetection(server: server, endpoint: server.chatEndpoint, models: models)
     }
 
-    static func parseModels(_ data: Data, for server: TutorLocalServer) throws -> [String] {
+    public static func parseModels(_ data: Data, for server: TutorLocalServer) throws -> [String] {
         let models: [String]
         do {
             switch server {

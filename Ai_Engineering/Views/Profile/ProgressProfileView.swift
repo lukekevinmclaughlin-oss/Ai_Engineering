@@ -1,3 +1,4 @@
+import EngineeringShared
 import SwiftUI
 
 struct ProgressProfileView: View {

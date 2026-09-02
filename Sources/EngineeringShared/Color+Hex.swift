@@ -1,7 +1,7 @@
 import SwiftUI
 
-extension Color {
-    init(hex: String) {
+public extension Color {
+    public init(hex: String) {
         let cleaned = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var value: UInt64 = 0
         Scanner(string: cleaned).scanHexInt64(&value)
@@ -33,8 +33,8 @@ extension Color {
     }
 }
 
-struct AEFlowLayout: Layout {
-    var spacing: CGFloat = AESpacing.xs
+public struct AEFlowLayout: Layout {
+    public var spacing: CGFloat = AESpacing.xs
 
     /// SwiftUI proposes `.infinity` (not nil) for an unbounded width -- e.g. inside a
     /// ScrollView on macOS. `proposal.width ?? fallback` only catches nil, so an
@@ -46,7 +46,7 @@ struct AEFlowLayout: Layout {
         return width
     }
 
-    func sizeThatFits(
+    public func sizeThatFits(
         proposal: ProposedViewSize,
         subviews: Subviews,
         cache: inout Void
@@ -56,7 +56,7 @@ struct AEFlowLayout: Layout {
         return CGSize(width: width, height: result.height)
     }
 
-    func placeSubviews(
+    public func placeSubviews(
         in bounds: CGRect,
         proposal: ProposedViewSize,
         subviews: Subviews,

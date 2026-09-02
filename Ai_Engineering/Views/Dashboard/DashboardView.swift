@@ -1,3 +1,4 @@
+import EngineeringShared
 import SwiftUI
 
 struct DashboardView: View {
@@ -16,6 +17,8 @@ struct DashboardView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: AESpacing.xl) {
                     dashboardHeader
+
+                    trackWorkflow
 
                     if !state.subscription.hasAccess,
                        !state.subscription.isCheckingAccess,
@@ -216,6 +219,20 @@ struct DashboardView: View {
                 CourseDetailView(course: course)
             }
         }
+    }
+
+    private var trackWorkflow: some View {
+        EngineeringWorkflowView(
+            title: "Design → evaluate → guard → operate",
+            outcome: "AI Engineering focuses on dependable AI products: model interfaces, evals, safety controls, observability, and production iteration.",
+            accent: AEColor.violet,
+            stages: [
+                EngineeringWorkflowStage(id: "design", title: "Design", detail: "Shape the model interface, context, and tool contract.", systemImage: "point.3.connected.trianglepath.dotted"),
+                EngineeringWorkflowStage(id: "evaluate", title: "Evaluate", detail: "Build task-specific evals and measure failure modes.", systemImage: "checkmark.seal"),
+                EngineeringWorkflowStage(id: "guard", title: "Guard", detail: "Add safety boundaries, fallbacks, and human review.", systemImage: "shield.lefthalf.filled"),
+                EngineeringWorkflowStage(id: "operate", title: "Operate", detail: "Trace quality, latency, and cost in production.", systemImage: "waveform.path.ecg")
+            ]
+        )
     }
 
     private var assemblySnapshot: AIAssemblyProgress {

@@ -273,22 +273,22 @@ private struct AETextRoleModifier: ViewModifier {
 
 public extension View {
     /// Applies an Ai_Engineering type role without forcing a foreground color.
-    func aeTextRole(_ role: AETextRole) -> some View {
+    public func aeTextRole(_ role: AETextRole) -> some View {
         modifier(AETextRoleModifier(role: role))
     }
 }
 
 public extension Font {
-    static var aeHero: Font { AETextRole.hero.font }
-    static var aeDisplay: Font { AETextRole.display.font }
-    static var aeTitle: Font { AETextRole.title.font }
-    static var aeHeading: Font { AETextRole.heading.font }
-    static var aeBody: Font { AETextRole.body.font }
-    static var aeCallout: Font { AETextRole.callout.font }
-    static var aeLabel: Font { AETextRole.label.font }
-    static var aeCaption: Font { AETextRole.caption.font }
-    static var aeMetric: Font { AETextRole.metric.font }
-    static var aeCode: Font { AETextRole.code.font }
+    public static var aeHero: Font { AETextRole.hero.font }
+    public static var aeDisplay: Font { AETextRole.display.font }
+    public static var aeTitle: Font { AETextRole.title.font }
+    public static var aeHeading: Font { AETextRole.heading.font }
+    public static var aeBody: Font { AETextRole.body.font }
+    public static var aeCallout: Font { AETextRole.callout.font }
+    public static var aeLabel: Font { AETextRole.label.font }
+    public static var aeCaption: Font { AETextRole.caption.font }
+    public static var aeMetric: Font { AETextRole.metric.font }
+    public static var aeCode: Font { AETextRole.code.font }
 }
 
 // MARK: - Layout tokens

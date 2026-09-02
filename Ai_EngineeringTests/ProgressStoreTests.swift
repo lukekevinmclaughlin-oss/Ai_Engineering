@@ -1,3 +1,4 @@
+import EngineeringShared
 import XCTest
 @testable import Ai_Engineering
 

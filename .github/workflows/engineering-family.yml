@@ -1,0 +1,30 @@
+name: Engineering family checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  package:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test shared package
+        run: swift test
+
+  app:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate
+      - name: Run macOS tests
+        run: |
+          xcodebuild test \
+            -project Ai_Engineering.xcodeproj \
+            -scheme Ai_Engineering \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO

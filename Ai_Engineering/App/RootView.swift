@@ -1,3 +1,4 @@
+import EngineeringShared
 import SwiftUI
 
 enum AppSection: String, CaseIterable, Identifiable {
