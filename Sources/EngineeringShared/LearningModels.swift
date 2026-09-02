@@ -4,7 +4,7 @@ public struct Curriculum: Codable, Sendable {
     public let courses: [Course]
 
 
-    init(courses: [Course]) {
+    public init(courses: [Course]) {
         self.courses = courses
     }
 }
@@ -31,7 +31,7 @@ public struct Course: Codable, Identifiable, Hashable, Sendable {
     }
 
 
-    init(
+    public init(
         id: String,
         title: String,
         eyebrow: String,
@@ -65,7 +65,7 @@ public struct LearningModule: Codable, Identifiable, Hashable, Sendable {
     public let lessons: [Lesson]
 
 
-    init(id: String, title: String, summary: String, lessons: [Lesson]) {
+    public init(id: String, title: String, summary: String, lessons: [Lesson]) {
         self.id = id
         self.title = title
         self.summary = summary
@@ -84,7 +84,7 @@ public struct Lesson: Codable, Identifiable, Hashable, Sendable {
     public let challenge: LessonChallenge?
 
 
-    init(
+    public init(
         id: String,
         title: String,
         kind: LessonKind,
@@ -137,7 +137,7 @@ public struct LessonContentBlock: Codable, Hashable, Sendable {
     public let items: [String]?
 
 
-    init(type: ContentBlockType, text: String, language: String?, items: [String]?) {
+    public init(type: ContentBlockType, text: String, language: String?, items: [String]?) {
         self.type = type
         self.text = text
         self.language = language
@@ -165,7 +165,7 @@ public struct LessonChallenge: Codable, Hashable, Sendable {
     public let hints: [String]
 
 
-    init(
+    public init(
         prompt: String,
         instructions: String,
         starterCode: String?,
@@ -193,7 +193,7 @@ public struct ChallengeChoice: Codable, Identifiable, Hashable, Sendable {
     public let text: String
 
 
-    init(id: String, text: String) {
+    public init(id: String, text: String) {
         self.id = id
         self.text = text
     }
@@ -204,7 +204,7 @@ public struct ChallengeTestCase: Codable, Hashable, Sendable {
     public let expected: String
 
 
-    init(input: String, expected: String) {
+    public init(input: String, expected: String) {
         self.input = input
         self.expected = expected
     }
@@ -227,7 +227,7 @@ public struct LabProject: Identifiable, Hashable, Sendable {
     public let starterFiles: [StarterFile]
 
 
-    init(
+    public init(
         id: String,
         title: String,
         subtitle: String,
@@ -275,7 +275,7 @@ public struct ProjectMilestone: Identifiable, Hashable, Sendable {
     }
 
 
-    init(id: String, title: String, detail: String, systemImage: String) {
+    public init(id: String, title: String, detail: String, systemImage: String) {
         self.id = id
         self.title = title
         self.detail = detail
@@ -290,7 +290,7 @@ public struct StarterFile: Identifiable, Hashable, Sendable {
     public let contents: String
 
 
-    init(name: String, language: String, contents: String) {
+    public init(name: String, language: String, contents: String) {
         self.name = name
         self.language = language
         self.contents = contents
@@ -305,7 +305,7 @@ public struct SkillMetric: Identifiable, Hashable, Sendable {
     public let color: String
 
 
-    init(name: String, value: Double, delta: Int, color: String) {
+    public init(name: String, value: Double, delta: Int, color: String) {
         self.name = name
         self.value = value
         self.delta = delta

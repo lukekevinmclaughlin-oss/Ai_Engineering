@@ -137,7 +137,7 @@ public struct AESyntaxCodeBlock: View {
     }
 
 
-    init(
+    public init(
         code: String,
         language: CodeLanguage,
         title: String? = nil,
@@ -234,7 +234,7 @@ public struct AESyntaxCodeEditor: View {
     }
 
 
-    init(
+    public init(
         text: Binding<String>,
         language: CodeLanguage,
         fileName: String,
@@ -328,7 +328,7 @@ public struct AECodeConsole: View {
     }
 
 
-    init(
+    public init(
         lines: [String],
         accent: Color = AEColor.signal,
         labelAccent: Color? = nil,

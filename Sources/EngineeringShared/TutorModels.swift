@@ -36,7 +36,7 @@ public struct TutorSource: Identifiable, Codable, Equatable, Hashable, Sendable 
     public let location: String
 
 
-    init(id: String, title: String, location: String) {
+    public init(id: String, title: String, location: String) {
         self.id = id
         self.title = title
         self.location = location
@@ -99,7 +99,7 @@ public struct TutorContext: Codable, Equatable, Hashable, Sendable {
     }
 
 
-    init(
+    public init(
         courseID: String? = nil,
         courseTitle: String? = nil,
         lessonID: String? = nil,
@@ -206,7 +206,7 @@ public struct TutorPreferences: Codable, Equatable, Sendable {
     public var answerDepth: TutorAnswerDepth = .deepDive
 
 
-    init(
+    public init(
         engine: TutorEngineChoice = .automatic,
         learnerLevel: TutorLearnerLevel = .firstSteps,
         answerDepth: TutorAnswerDepth = .deepDive
@@ -496,7 +496,7 @@ public struct TutorAnswer: Sendable {
     public let sources: [TutorSource]
 
 
-    init(content: String, engineName: String, sources: [TutorSource]) {
+    public init(content: String, engineName: String, sources: [TutorSource]) {
         self.content = content
         self.engineName = engineName
         self.sources = sources
@@ -522,7 +522,7 @@ public struct TutorKnowledgeDocument: Identifiable, Hashable, Sendable {
     }
 
 
-    init(
+    public init(
         id: String,
         kind: Kind,
         title: String,

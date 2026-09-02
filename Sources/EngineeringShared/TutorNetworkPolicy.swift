@@ -37,8 +37,41 @@ public enum TutorEndpointPolicy {
     public static func origin(for url: URL) -> String {
         let scheme = url.scheme?.lowercased() ?? ""
         let host = url.host?.lowercased() ?? ""
-        let port = url.port.map { ":($0)" } ?? ""
-        return "(scheme)://(host)(port)"
+        let port = url.port.map { ":\($0)" } ?? ""
+        return "\(scheme)://\(host)\(port)"
+    }
+}
+
+public enum BoundedHTTPBodyError: Error {
+    case responseTooLarge
+}
+
+public enum BoundedHTTPBody {
+    public static func load(
+        for request: URLRequest,
+        using session: URLSession,
+        maximumBytes: Int
+    ) async throws -> (Data, URLResponse) {
+        let (bytes, response) = try await session.bytes(for: request)
+        try validateExpectedLength(response.expectedContentLength, maximumBytes: maximumBytes)
+
+        var data = Data()
+        if response.expectedContentLength > 0 {
+            data.reserveCapacity(min(Int(response.expectedContentLength), maximumBytes))
+        }
+        for try await byte in bytes {
+            guard data.count < maximumBytes else {
+                throw BoundedHTTPBodyError.responseTooLarge
+            }
+            data.append(byte)
+        }
+        return (data, response)
+    }
+
+    private static func validateExpectedLength(_ length: Int64, maximumBytes: Int) throws {
+        if length > Int64(maximumBytes) {
+            throw BoundedHTTPBodyError.responseTooLarge
+        }
     }
 }
 

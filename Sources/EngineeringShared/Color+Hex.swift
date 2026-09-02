@@ -92,7 +92,7 @@ public struct AEFlowLayout: Layout {
     }
 
 
-    init(spacing: CGFloat = AESpacing.xs) {
+    public init(spacing: CGFloat = AESpacing.xs) {
         self.spacing = spacing
     }
 }

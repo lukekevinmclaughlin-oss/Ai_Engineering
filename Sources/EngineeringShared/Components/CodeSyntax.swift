@@ -136,7 +136,7 @@ public struct SyntaxToken: Equatable, Sendable {
     public var range: NSRange { NSRange(location: location, length: length) }
 
 
-    init(location: Int, length: Int, kind: SyntaxTokenKind) {
+    public init(location: Int, length: Int, kind: SyntaxTokenKind) {
         self.location = location
         self.length = length
         self.kind = kind
@@ -291,7 +291,7 @@ public struct SyntaxRGB {
     }
 
 
-    init(red: Double, green: Double, blue: Double) {
+    public init(red: Double, green: Double, blue: Double) {
         self.red = red
         self.green = green
         self.blue = blue

@@ -8,7 +8,7 @@ public struct TutorLocalServerDetection: Identifiable, Equatable, Sendable {
     public var id: String { server.id }
 
 
-    init(server: TutorLocalServer, endpoint: String, models: [String]) {
+    public init(server: TutorLocalServer, endpoint: String, models: [String]) {
         self.server = server
         self.endpoint = endpoint
         self.models = models
@@ -79,7 +79,7 @@ public enum LocalTutorServerDiscovery {
             )
         } catch is CancellationError {
             throw CancellationError()
-        } catch TutorProviderError.responseTooLarge {
+        } catch BoundedHTTPBodyError.responseTooLarge {
             throw LocalTutorServerDiscoveryError.invalidResponse(server)
         } catch {
             throw LocalTutorServerDiscoveryError.unavailable(server)

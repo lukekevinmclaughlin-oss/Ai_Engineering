@@ -14,7 +14,7 @@ public struct LearnerProgress: Codable, Equatable {
     public var dailyGoal = 100
 
 
-    init(
+    public init(
         completedLessonIDs: Set<String> = [],
         completedMilestoneIDs: Set<String> = [],
         bookmarkedCourseIDs: Set<String> = [],
