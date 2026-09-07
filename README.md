@@ -6,6 +6,10 @@ Ai_Engineering is a native SwiftUI learning app for becoming a production-capabl
 
 The same target runs on iPhone, iPad, and macOS. iOS uses a compact tab-based experience; macOS uses a persistent learning sidebar and split-pane lesson workspace.
 
+## Website
+
+See the [Mac product page](https://www.macossoftware.com/ai-engineering/) for screenshots, features, system requirements and the direct download edition. For help, visit [IndepApps support](https://www.macossoftware.com/support/).
+
 ## What is included
 
 - Frontier-style adaptive design system with animated neural graphics, glass surfaces, grid fields, semantic color, and a complete app icon set
