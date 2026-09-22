@@ -1,0 +1,47 @@
+{
+  "name": "ai-engineering-windows",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.cjs",
+  "author": "Luke McLaughlin",
+  "description": "AI engineering courses, guided projects and private offline tutoring.",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build && node scripts/prepare-build.mjs",
+    "test": "vitest run",
+    "package:win": "pnpm run build && electron-builder --win dir --x64 --publish never"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.0",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0",
+    "vitest": "^3.0.0",
+    "electron": "39.8.10",
+    "electron-builder": "26.15.3",
+    "png-to-ico": "3.0.1",
+    "rcedit": "5.0.2",
+    "fake-indexeddb": "6.2.4"
+  },
+  "build": {
+    "appId": "com.lukemclaughlin.aiengineering.windows",
+    "productName": "AI Engineering",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "resources/**/*",
+      "content/**/*"
+    ],
+    "afterPack": "build/afterPack.cjs",
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "dir"
+      ],
+      "signAndEditExecutable": false
+    }
+  }
+}

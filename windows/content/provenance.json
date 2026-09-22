@@ -1,0 +1,18 @@
+[
+  {
+    "file": "Ai_Engineering/Resources/curriculum.json",
+    "sha256": "68725af97d8630951cedaebb26f812b56760299a432c06ba04f0520df2d6df32"
+  },
+  {
+    "file": "Ai_Engineering/Data/ProjectCatalog.swift",
+    "sha256": "f532b9aed5afe06063c1a5121a09693ebd4af7d79526d39e0413349465a4b23e"
+  },
+  {
+    "file": "Ai_Engineering/Services/TutorKnowledgeBase.swift",
+    "sha256": "5ad8be41def5305914c06b37ec3dc5be58cd08f64483c27747693b649653fb0e"
+  },
+  {
+    "file": "Sources/EngineeringShared/ProgressStore.swift",
+    "sha256": "bacf465f3bf58e75cdd73a20740bf28258ccd4aeb75994c8de7aebc33f220e6b"
+  }
+]

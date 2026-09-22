@@ -1,0 +1,5 @@
+import {it,expect} from 'vitest';import {assembly,stages} from '../src/assembly';import {fresh,lessons,projects,complete,milestone,validate} from '../src/core';
+it('tracks the same 600 original curriculum components without a fake baseline',()=>{expect(assembly(fresh())).toMatchObject({units:0,total:600,fraction:0,stage:stages[0]});});
+it('adds courses only after every lesson is complete and scopes milestones',()=>{const s=fresh();lessons.slice(0,10).forEach(l=>complete(s,l.lesson.id));milestone(s,projects[0].id+'::'+projects[0].milestones[0].id);expect(assembly(s)).toMatchObject({completedLessons:10,completedCourses:1,completedMilestones:1,units:12});});
+it('reaches the last stage only when the full catalogue is complete',()=>{const s=fresh();lessons.forEach(l=>complete(s,l.lesson.id));projects.forEach(p=>p.milestones.forEach(m=>milestone(s,p.id+'::'+m.id)));expect(assembly(s)).toMatchObject({units:600,fraction:1,stage:stages[5]});});
+it('roundtrips system appearance without changing recorded work',()=>expect(validate({...fresh(),theme:'system'}).theme).toBe('system'));

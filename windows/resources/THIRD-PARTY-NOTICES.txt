@@ -1,0 +1,2 @@
+AI Engineering for Windows
+The application frontend and host contain no third-party runtime JavaScript packages. Electron, Chromium and their component license notices are distributed beside the executable in LICENSE.electron.txt and LICENSES.chromium.html. Development tools are not shipped.
